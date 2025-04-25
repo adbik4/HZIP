@@ -6,8 +6,15 @@ int main()
 {
 	SetConsoleOutputCP(1250);
 	
-	BinaryTree<int> tree;
-	tree.insert(1);
-	tree.insert(4);
+	//BinaryTree<int> tree;
+	//for (int x : {1,2,3,4,5,6,7}) {
+	//	tree.insert(x);
+	//}
+
+	//tree.printPostOrder();
+
+	Message msg("Hello World!");
+	std::cout << msg.GetProbabilities() << "\n";
+
 	return 0;
 }

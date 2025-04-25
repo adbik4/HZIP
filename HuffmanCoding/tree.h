@@ -1,14 +1,12 @@
 #include "message.h"
 
 template <typename T>
-class Node {
-private:
+struct Node {
 	T data;
 	Node* right;
 	Node* left;
 
-public:
-	Node(const T data, const Node* r, const Node* l) : data(data) {};
+	Node(const T data) : data(data) { left = right = nullptr; }
 };
 
 template <typename T>
@@ -18,6 +16,31 @@ private:
 
 public:
 	BinaryTree() : rootNode(nullptr) {};
+	~BinaryTree() {
+		deletePostOrder(rootNode);
+	}
+
+	void deletePostOrder(struct Node<T>* node) {
+		if (node == nullptr) {
+			return;
+		}
+		deletePostOrder(node->left);
+		deletePostOrder(node->right);
+		delete node;
+	}
+
+	void accessPostOrder(struct Node<T>* node) {
+		if (node == nullptr) {
+			return;
+		}
+		accessPostOrder(node->left);
+		accessPostOrder(node->right);
+		std::cout << node->data << '\n';
+	}
+
+	void printPostOrder() {
+		accessPostOrder(rootNode);
+	}
 
 	void insert(const T& data) {
 		Node<T>* newNode = new Node<T>(data);
