@@ -7,9 +7,14 @@
 #include <unordered_map>
 #include <iomanip>
 
-struct Symbol {
+class Symbol {
+public:
 	char character;
 	double probability;
+	uint32_t encoding;
+
+	Symbol() = default;
+	Symbol(char c, double d) : character(c), probability(d), encoding(0) {};
 
 	bool operator<(const Symbol& other) const {
 		return probability < other.probability;
@@ -21,69 +26,67 @@ struct Symbol {
 	}
 };
 
-
-class Message {
+class File {
 private:
+	static File* instance;
 	std::string _content;
-	std::priority_queue<Symbol> _probQueue;
+	std::unordered_map<char, Symbol> _huffMap;
+
+	File(std::string str) {
+		_content = str;
+		_huffMap = CalcProbability();
+	}
 
 	// private methods
-	std::priority_queue<Symbol> CalcProbability() const {
-		std::priority_queue<Symbol> probQueue;
+	std::unordered_map<char, Symbol> CalcProbability() {
 		const double N = _content.size();
-		std::unordered_map<char, int> charCount;
+		std::unordered_map<char, Symbol> map;
 
 		for (char x : _content) {
-			if (!charCount.contains(x)) {
-				charCount.insert({ x, 1 }); // pierwsze wystąpienie znaku
+			if (!map.contains(x)) {
+				map.insert({ x, Symbol(x, 1/N) }); // pierwsze wystąpienie znaku
 			}
 			else {
-				charCount[x]++;	// z każdym kolejnym wystąpieniem
+				map[x].probability += 1/N;	// z każdym kolejnym wystąpieniem
 			}
 		}
-
-		for (const auto& [key, value] : charCount) {
-			probQueue.push({key, static_cast<double>(value) / N});
-		}
-		return probQueue;
+		return map;
+		/*for (const auto& [key, value] : charCount) {
+			static_cast<double>(value) / N;
+		}*/
 	}
 
 public:
-	// constructors
-	Message() {
-		_content = "";
-		_probQueue = CalcProbability();
+	File(const File&) = delete;
+	File& operator=(const File&) = delete;
+
+	static File* getInstance(std::string str) {
+		if (!instance) {
+			instance = new File(str);
+		}
+		return instance;
 	}
-	Message(std::string str) {
-		_content = str;
-		_probQueue = CalcProbability();
-	}
-	~Message() = default;
 
 	// getters
 	std::string GetContent() const { return _content; }
-	std::priority_queue<Symbol> GetProbabilities() const { return _probQueue; }
-
+	std::unordered_map<char, Symbol> GetMapping() const { return _huffMap; }
 };
 
 // overloads
-std::ostream& operator<<(std::ostream& os, std::priority_queue<Symbol> other) {
+std::ostream& operator<<(std::ostream& os, std::unordered_map<char, Symbol> other) {
 	os << "LISTA PRAWDOPODOBIEŃSTW" << "\n";
 
 	const auto default_precision{ os.precision() };
 	os << std::setprecision(2);
 
-	auto tmp = other;
-	for (; !tmp.empty(); tmp.pop()) {
-		char chr = tmp.top().character;
-		double prob = tmp.top().probability;
-		if (chr == ' ') {
+	for (const auto& [key, value] : other) {
+		if (value.character == ' ') {
 			os << "[space]";
-			os << ": " << prob << '\n';
+			os << ": " << value.probability << '\n';
 		}
 		else {
-			os << chr;
-			os << "      : " << prob << '\n';
+			os << value.character;
+			os << "      : " << value.probability << '\n';
 		}
 	}
 	os << std::setprecision(default_precision);
