@@ -1,74 +1,98 @@
-#include "message.h"
+#pragma once
+#include<queue>
+#include<unordered_map>
+#include <string>
 
-template <typename T>
-struct Node {
-	T data;
-	Node* right;
-	Node* left;
+#include "types.h"
+#include "file.h"
 
-	Node(const T data) : data(data) { left = right = nullptr; }
-};
 
-template <typename T>
-class BinaryTree {
+class HuffmanTree {
 private:
-	Node<T>* rootNode;
+	Node* rootNode;
+
+	// methods
+	void deletePostOrder(struct Node* node);
+	void printPostOrderHelper(struct Node* node);
+	void accessPostOrder(struct Node* node);
 
 public:
-	BinaryTree() : rootNode(nullptr) {};
-	~BinaryTree() {
+	// constructor / destructor
+	HuffmanTree(const std::unordered_map<char, Symbol>& probMap);
+	~HuffmanTree() {
 		deletePostOrder(rootNode);
 	}
 
-	void deletePostOrder(struct Node<T>* node) {
-		if (node == nullptr) {
-			return;
-		}
-		deletePostOrder(node->left);
-		deletePostOrder(node->right);
-		delete node;
+	// methods
+	void printPostOrder();
+	std::string getEncoding(char c);
+};
+
+
+// constructor definition
+HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
+	// THIS IS THE MAIN HUFFMAN CODE LOGIC
+
+	std::priority_queue<Node*, std::vector<Node*>, NodeComp> probQueue;
+	for (const auto& [character, value] : probMap) {
+		probQueue.push(new Node(value));
 	}
 
-	void accessPostOrder(struct Node<T>* node) {
-		if (node == nullptr) {
-			return;
-		}
-		accessPostOrder(node->left);
-		accessPostOrder(node->right);
+	while (probQueue.size() > 1) {
+		Node* n1 = probQueue.top();
+		probQueue.pop();
+		Node* n2 = probQueue.top();
+		probQueue.pop();
+
+		Symbol mergedChar(n1->data.freq + n2->data.freq);
+		Node* interNode = new Node(mergedChar, n1, n2);
+
+		probQueue.push(interNode);
+	}
+
+	rootNode = probQueue.top();
+}
+
+// methods definitions
+void HuffmanTree::printPostOrder() {
+	printPostOrderHelper(rootNode);
+}
+
+void HuffmanTree::printPostOrderHelper(struct Node* node) {
+	if (node == nullptr) {
+		return;
+	}
+	printPostOrderHelper(node->left);
+	printPostOrderHelper(node->right);
+	if (node->left == nullptr && node->right == nullptr) {
 		std::cout << node->data << '\n';
 	}
+}
 
-	void printPostOrder() {
-		accessPostOrder(rootNode);
-	}
+void HuffmanTree::deletePostOrder(struct Node* node) {
+	deletePostOrder(node->left);
+	deletePostOrder(node->right);
+	delete node;
+}
 
-	void insert(const T& data) {
-		Node<T>* newNode = new Node<T>(data);
-		if (rootNode == nullptr) {
-			rootNode = newNode;
-			return;
-		}
-		
-		std::queue<Node<T>*> queue;
-		queue.push(rootNode);
-		
-		while (!queue.empty()) {
-			Node<T>* currNode = queue.front();
-			queue.pop();
-			if (currNode->left == nullptr) {
-				currNode->left = newNode;
-				return;
-			}
-			else {
-				queue.push(currNode->left);
-			}
-			if (currNode->right == nullptr) {
-				currNode->right = newNode;
-				return;
-			}
-			else {
-				queue.push(currNode->right);
-			}
-		}
+void HuffmanTree::accessPostOrder(struct Node* node) {
+	if (node == nullptr) {
+		return;
 	}
-};
+	accessPostOrder(node->left);
+	accessPostOrder(node->right);
+}
+
+std::string HuffmanTree::getEncoding( char c) {
+	std::string encoding;
+
+	accessPostOrder(rootNode->left);
+	accessPostOrder(rootNode->right);
+
+	if (rootNode->left == nullptr &&
+		rootNode->right == nullptr &&
+		rootNode->data.character == c)
+	{
+		return encoding;
+	}
+}
