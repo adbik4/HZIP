@@ -10,19 +10,19 @@ public:
 	Symbol()
 		: character('\0'),
 		freq(0),
-		encoding(0)
+		encoding{}
 	{}
 
 	Symbol(const size_t& frequency)
 		: character('\0'),
 		 freq(frequency),
-		 encoding(0)
+		encoding{}
 	{}
 
 	Symbol(const char& character, const size_t& frequency)
 		: character(character),
 		 freq(frequency),
-		 encoding(0)
+		 encoding{}
 	{}
 
 	// overrides

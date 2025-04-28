@@ -70,6 +70,9 @@ void HuffmanTree::printPostOrderHelper(struct Node* node) {
 }
 
 void HuffmanTree::deletePostOrder(struct Node* node) {
+	if (node == nullptr) {
+		return;
+	}
 	deletePostOrder(node->left);
 	deletePostOrder(node->right);
 	delete node;

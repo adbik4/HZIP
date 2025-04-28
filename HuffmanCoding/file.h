@@ -40,7 +40,6 @@ public:
 	}
 
 
-
 	// getters
 	std::string GetContent() const { return _content; }
 	std::unordered_map<char, Symbol> GetMapping() const { return _huffMap; }
@@ -55,7 +54,8 @@ std::unordered_map<char, Symbol> File::CalcFrequency() {
 
 	for (char x : _content) {
 		if (!map.contains(x)) {
-			map.insert({ x, Symbol(x, 1) }); // pierwsze wystąpienie znaku
+			Symbol newSymbol(x, 1);
+			map.insert({ x, newSymbol }); // pierwsze wystąpienie znaku
 		}
 		else {
 			++map[x].freq;	// z każdym kolejnym wystąpieniem
