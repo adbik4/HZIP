@@ -11,8 +11,8 @@ int main()
 	SetConsoleOutputCP(1250);
 	std::cout << std::setprecision(2);
 
-	File* message = File::getInstance("Hello World!");
-	(message->GetTree()).printPostOrder();
+	File* message = File::getInstance("A_DEAD_DAD_CEDED_A_BAD_BABE_A_BEADED_ABACA_BED");
+	std::cout << message->GetMapping() << "\n";
 
 	return 0;
 }

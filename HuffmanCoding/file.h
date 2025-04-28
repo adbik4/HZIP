@@ -21,11 +21,12 @@ private:
 		: _content(str),
 		_huffMap(CalcFrequency()),
 		_huffTree(_huffMap)
-	{}
+	{
+		_huffTree.encode(_huffMap);
+	}
 
 	// private methods
 	std::unordered_map<char, Symbol> CalcFrequency();
-	void encode();
 
 public:
 	// public constructors
@@ -64,8 +65,11 @@ std::unordered_map<char, Symbol> File::CalcFrequency() {
 	return map;
 }
 
-void File::encode() {
-	for (const auto& [key, value] : _huffMap) {
-		_huffMap[key].encoding = _huffTree.getEncoding(value.character);
+// overloads
+std::ostream& operator<<(std::ostream& os, const std::unordered_map<char, Symbol>& map) {
+	std::cout << "symbol count: " << map.size() << "\n\n";
+	for (const auto& [key, value] : map) {
+		std::cout << value << "\n";
 	}
+	return os;
 }

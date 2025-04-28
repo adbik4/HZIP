@@ -14,7 +14,7 @@ private:
 	// methods
 	void deletePostOrder(struct Node* node);
 	void printPostOrderHelper(struct Node* node);
-	void accessPostOrder(struct Node* node);
+	void traverseEncodings(struct Node* node, std::unordered_map<char, Symbol>& map, std::string& encoding);
 
 public:
 	// constructor / destructor
@@ -25,7 +25,7 @@ public:
 
 	// methods
 	void printPostOrder();
-	std::string getEncoding(char c);
+	void encode(std::unordered_map<char, Symbol>& map);
 };
 
 
@@ -53,7 +53,32 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 	rootNode = probQueue.top();
 }
 
+
 // methods definitions
+void HuffmanTree::encode(std::unordered_map<char, Symbol>& map) {
+	std::string encoding;
+	traverseEncodings(rootNode, map, encoding);
+}
+
+void HuffmanTree::traverseEncodings(struct Node* node, std::unordered_map<char, Symbol>& map, std::string& encoding) {
+	if (node == nullptr) {
+		return;
+	}
+	else if (node->left == nullptr &&
+		node->right == nullptr)
+	{
+		map[node->data.character].encoding = encoding;
+	}
+
+	encoding.push_back('0');
+	traverseEncodings(node->left, map, encoding);
+	encoding.pop_back();
+
+	encoding.push_back('1');
+	traverseEncodings(node->right, map, encoding);
+	encoding.pop_back();
+}
+
 void HuffmanTree::printPostOrder() {
 	printPostOrderHelper(rootNode);
 }
@@ -76,26 +101,4 @@ void HuffmanTree::deletePostOrder(struct Node* node) {
 	deletePostOrder(node->left);
 	deletePostOrder(node->right);
 	delete node;
-}
-
-void HuffmanTree::accessPostOrder(struct Node* node) {
-	if (node == nullptr) {
-		return;
-	}
-	accessPostOrder(node->left);
-	accessPostOrder(node->right);
-}
-
-std::string HuffmanTree::getEncoding( char c) {
-	std::string encoding;
-
-	accessPostOrder(rootNode->left);
-	accessPostOrder(rootNode->right);
-
-	if (rootNode->left == nullptr &&
-		rootNode->right == nullptr &&
-		rootNode->data.character == c)
-	{
-		return encoding;
-	}
 }
