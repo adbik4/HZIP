@@ -10,11 +10,21 @@
 class HuffmanTree {
 private:
 	Node* rootNode;
+	struct NodeComp {
+		bool operator()(Node* self, Node* other) {
+			return self->data.freq > other->data.freq;
+		}
+	};
+	
+	struct traversalInfo {
+		uint32_t encoding = 0;
+		uint8_t length = 0;
+	};
 
 	// methods
 	void deletePostOrder(struct Node* node);
 	void printPostOrderHelper(struct Node* node);
-	void traverseEncodings(struct Node* node, std::unordered_map<char, Symbol>& map, std::string& encoding);
+	void traverseEncodings(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info);
 
 public:
 	// constructor / destructor
@@ -27,7 +37,6 @@ public:
 	void printPostOrder();
 	void encode(std::unordered_map<char, Symbol>& map);
 };
-
 
 // constructor definition
 HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
@@ -56,27 +65,35 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 
 // methods definitions
 void HuffmanTree::encode(std::unordered_map<char, Symbol>& map) {
-	std::string encoding;
-	traverseEncodings(rootNode, map, encoding);
+	traverseEncodings(rootNode, map, traversalInfo());
 }
 
-void HuffmanTree::traverseEncodings(struct Node* node, std::unordered_map<char, Symbol>& map, std::string& encoding) {
+void HuffmanTree::traverseEncodings(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info) {
+	// this function traverses the tree. Every time it takes the left branch it concatenates 0, a right branch it concatenates 1.
+	// When it reaches a leaf it saves the encoding at the corresponding entry in the table
+
 	if (node == nullptr) {
 		return;
 	}
 	else if (node->left == nullptr &&
 		node->right == nullptr)
 	{
-		map[node->data.character].encoding = encoding;
+		// save
+		map[node->data.character].encoding.code = info.encoding;
+		map[node->data.character].encoding.length = info.length;
 	}
 
-	encoding.push_back('0');
-	traverseEncodings(node->left, map, encoding);
-	encoding.pop_back();
+	info.encoding <<= 1;
+	info.length += 1;
+	traverseEncodings(node->left, map, info);
+	info.length -= 1;
+	info.encoding >>= 1;
 
-	encoding.push_back('1');
-	traverseEncodings(node->right, map, encoding);
-	encoding.pop_back();
+	info.encoding = (info.encoding << 1) + 1;
+	info.length += 1;
+	traverseEncodings(node->right, map, info);
+	info.length -= 1;
+	info.encoding >>= 1;
 }
 
 void HuffmanTree::printPostOrder() {

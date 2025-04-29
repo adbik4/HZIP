@@ -42,24 +42,24 @@ public:
 
 
 	// getters
-	std::string GetContent() const { return _content; }
-	std::unordered_map<char, Symbol> GetMapping() const { return _huffMap; }
-	HuffmanTree GetTree() const { return _huffTree; }
+	std::string getContent() const { return _content; }
+	std::unordered_map<char, Symbol> getMapping() const { return _huffMap; }
+	HuffmanTree getTree() const { return _huffTree; }
 };
 
 
 // main method definitions
 std::unordered_map<char, Symbol> File::CalcFrequency() {
-	const size_t N = _content.size();
+	const double N = static_cast<double>(_content.size());
 	std::unordered_map<char, Symbol> map;
 
 	for (char x : _content) {
 		if (!map.contains(x)) {
-			Symbol newSymbol(x, 1);
-			map.insert({ x, newSymbol }); // pierwsze wystąpienie znaku
+			Symbol newSymbol(x, 1/N);
+			map.insert({ x, newSymbol });
 		}
 		else {
-			++map[x].freq;	// z każdym kolejnym wystąpieniem
+			map[x].freq += 1/N;
 		}
 	}
 	return map;

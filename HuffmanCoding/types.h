@@ -1,11 +1,39 @@
 #pragma once
+#include<math.h>
 
+
+struct Code {
+	uint32_t code;
+	uint8_t length;
+
+	std::string toString() const {
+		std::string str;
+		uint32_t val = code;
+
+		// convert to binary
+		while (val > 0) {
+			if (val % 2) {
+				str.insert(str.begin(), '1');
+			} else {
+				str.insert(str.begin(), '0');
+			}
+			val >>= 1;
+		}
+
+		// pad with zeros
+		while (str.size() < length) {
+			str.insert(str.begin(), '0');
+		}
+
+		return str;
+	}
+};
 
 class Symbol {
 public:
 	char character;
-	size_t freq;
-	std::string encoding;
+	double freq;
+	Code encoding;
 
 	Symbol()
 		: character('\0'),
@@ -13,36 +41,40 @@ public:
 		encoding{}
 	{}
 
-	Symbol(const size_t& frequency)
+	Symbol(const double& frequency)
 		: character('\0'),
 		 freq(frequency),
 		encoding{}
 	{}
 
-	Symbol(const char& character, const size_t& frequency)
+	Symbol(const char& character, const double& frequency)
 		: character(character),
 		 freq(frequency),
 		 encoding{}
 	{}
 
-	// overrides
-	bool operator<(const Symbol& other) const {
-		return freq < other.freq;
-	}
 
+	// overloads
 	friend std::ostream& operator<<(std::ostream& os, const Symbol& sym) {
-		const size_t MAX_LEN = 8;
 		std::string token = std::string(1, sym.character);
+
+		const size_t MAX_TOKEN_LEN = 8;  // to accomodate for the special symbol representations
 		if (sym.character == ' ') {
 			token = "[space]";
 		}
+		else if (sym.character == '\n') {
+			token = "[newl]";
+		}
+		else if (sym.character == '\t') {
+			token = "[tab]";
+		}
 
 		token.push_back(' ');
-		while (token.length() < MAX_LEN) {
+		while (token.length() < MAX_TOKEN_LEN) {
 			token.push_back('-');
 		}
 
-		os << token << "-> freq: " << sym.freq << ", encoding: " << sym.encoding;
+		os << token << "> freq: " << sym.freq << ", encoding: " << sym.encoding.toString();
 		return os;
 	}
 };
@@ -64,10 +96,4 @@ struct Node {
 		  left(left),
 		  right(right)
 	{}
-};
-
-struct NodeComp {
-	bool operator()(Node* self, Node* other) {
-		return self->data.freq > other->data.freq;
-	}
 };
