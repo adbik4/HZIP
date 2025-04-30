@@ -4,9 +4,11 @@
 #include "file.h"
 #include "tree.h"
 #include "types.h"
-#include "storage.h"
 
 File* File::instance = nullptr;
+std::string File::_content;
+std::unordered_map<char, Symbol> File::_huffMap;
+HuffmanTree* File::_huffTree = nullptr;
 
 int main()
 {
@@ -15,10 +17,11 @@ int main()
 	std::cout << std::fixed << std::setprecision(3);
 
 	// code 
-	File* message = File::getInstance("ABBCCC");
-	bitVector bitstream = compress(message->getContent(), message->getMapping());
+	File* message = File::getInstance("Hello World!");
+	bitVector bitstream = File::compress();
 	std::cout << message->getMapping() << "\n";
 
+	std::cout << "decompression result : " << File::decompress(bitstream) << "\n";
 
 	//	 WHAT THE CODE SHOULD LOOK LIKE
 	//	 decompress:

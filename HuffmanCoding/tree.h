@@ -23,19 +23,20 @@ private:
 
 	// methods
 	void deletePostOrder(struct Node* node);
-	void printPostOrderHelper(struct Node* node);
-	void traverseEncodings(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info);
+	void traverseEncoding(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info);
+	char traverseDecoding(Node* node, bitVector& path) const;
 
 public:
 	// constructor / destructor
 	HuffmanTree(const std::unordered_map<char, Symbol>& probMap);
+
 	~HuffmanTree() {
 		deletePostOrder(rootNode);
 	}
 
 	// methods
-	void printPostOrder();
-	void encode(std::unordered_map<char, Symbol>& map);
+	void encodeTable(std::unordered_map<char, Symbol>& map);
+	char decodeChar(bitVector& path) const;
 };
 
 // constructor definition
@@ -64,12 +65,13 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 
 
 // methods definitions
-void HuffmanTree::encode(std::unordered_map<char, Symbol>& map) {
-	traverseEncodings(rootNode, map, traversalInfo());
+void HuffmanTree::encodeTable(std::unordered_map<char, Symbol>& map) {
+	traverseEncoding(rootNode, map, traversalInfo());
 }
 
-void HuffmanTree::traverseEncodings(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info) {
-	// this function traverses the tree. Every time it takes the left branch it concatenates 0, a right branch it concatenates 1.
+void HuffmanTree::traverseEncoding(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info) {
+	// this function traverses the tree.
+	// Every time it takes the left branch it concatenates 0, a right branch it concatenates 1.
 	// When it reaches a leaf it saves the encoding at the corresponding entry in the table
 
 	if (node == nullptr) {
@@ -85,30 +87,38 @@ void HuffmanTree::traverseEncodings(struct Node* node, std::unordered_map<char, 
 
 	info.encoding <<= 1;
 	info.length += 1;
-	traverseEncodings(node->left, map, info);
+	traverseEncoding(node->left, map, info);
 	info.length -= 1;
 	info.encoding >>= 1;
 
 	info.encoding = (info.encoding << 1) + 1;
 	info.length += 1;
-	traverseEncodings(node->right, map, info);
+	traverseEncoding(node->right, map, info);
 	info.length -= 1;
 	info.encoding >>= 1;
 }
 
-void HuffmanTree::printPostOrder() {
-	printPostOrderHelper(rootNode);
+char HuffmanTree::decodeChar(bitVector& path) const {
+	return traverseDecoding(rootNode, path);
 }
 
-void HuffmanTree::printPostOrderHelper(struct Node* node) {
-	if (node == nullptr) {
-		return;
-	}
-	printPostOrderHelper(node->left);
-	printPostOrderHelper(node->right);
+char HuffmanTree::traverseDecoding(Node* node, bitVector& path) const{
+	// this function traverses the tree using a path as instructions to decode a symbol.
+	// Every time it reads zero it takes a left branch, one - a right branch.
+	// When it reaches a leaf it returns the decoded character
+
 	if (node->left == nullptr && node->right == nullptr) {
-		std::cout << node->data << '\n';
+		return node->data.character;
 	}
+
+	char decodedChar = '\0';
+	if (path.pop_front()) {
+		decodedChar = traverseDecoding(node->right, path);
+	} else {
+		decodedChar = traverseDecoding(node->left, path);
+	}
+
+	return decodedChar;
 }
 
 void HuffmanTree::deletePostOrder(struct Node* node) {

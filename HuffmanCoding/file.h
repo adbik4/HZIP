@@ -12,17 +12,17 @@
 class File {  // singleton
 private:
 	static File* instance;
-	std::string _content;
-	std::unordered_map<char, Symbol> _huffMap;
-	HuffmanTree _huffTree;
+	static std::string _content;
+	static std::unordered_map<char, Symbol> _huffMap;
+	static HuffmanTree* _huffTree;
 
 	// private constructor
 	File(std::string str)
-		: _content(str),
-		_huffMap(CalcFrequency()),
-		_huffTree(_huffMap)
 	{
-		_huffTree.encode(_huffMap);
+		_content = str;
+		_huffMap = CalcFrequency();
+		_huffTree = new HuffmanTree(_huffMap);
+		_huffTree->encodeTable(_huffMap);
 	}
 
 	// private methods
@@ -40,11 +40,15 @@ public:
 		return instance;
 	}
 
+	// methods
+	static bitVector compress();
+	static std::string decompress(const bitVector& vector);
+
 
 	// getters
 	std::string getContent() const { return _content; }
 	std::unordered_map<char, Symbol> getMapping() const { return _huffMap; }
-	HuffmanTree getTree() const { return _huffTree; }
+	HuffmanTree* getTree() const { return _huffTree; }
 };
 
 
@@ -64,6 +68,27 @@ std::unordered_map<char, Symbol> File::CalcFrequency() {
 	}
 	return map;
 }
+
+bitVector File::compress() {
+	bitVector path;
+
+	for (char c : _content) {
+		Code encoding = _huffMap.find(c)->second.encoding;
+		path.pushBits(encoding.code, encoding.length);
+	}
+	return path;
+}
+
+std::string File::decompress(const bitVector& vector) {
+	bitVector tmpPath = vector;
+	std::string content;
+
+	while (!tmpPath.empty()) {
+		content.push_back(_huffTree->decodeChar(tmpPath));
+	}
+	return content;
+}
+
 
 // overloads
 std::ostream& operator<<(std::ostream& os, const std::unordered_map<char, Symbol>& map) {
