@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include <iostream>
 #include <string>
-#include <queue>
-#include <utility>
 #include <unordered_map>
 #include <fstream>
+#include <string_view>
+#include <array>
 
 #include "types.h"
 #include "tree.h"
@@ -14,7 +14,7 @@ class File {  // singleton
 private:
 	static File* instance;
 
-	static uint8_t _type;
+	static std::array<char, 4> _format;
 	static std::string _content;
 	static std::unordered_map<char, Symbol> _huffMap;
 	static HuffmanTree* _huffTree;
@@ -22,7 +22,7 @@ private:
 	// private constructor
 	File(std::string filepath)
 	{
-		_content = readFile(filepath);
+		std::tie(_format, _content) = readFile(filepath);
 		_huffMap = CalcFrequency();
 		_huffTree = new HuffmanTree(_huffMap);
 		_huffTree->encodeTable(_huffMap);
@@ -46,7 +46,8 @@ public:
 	// methods
 	static bitVector compress();
 	static std::string decompress(const bitVector& vector);
-	static std::string readFile(const std::string& filepath);
+
+	static std::pair< std::array<char, 4>, std::string >  readFile(const std::string& filepath);
 	static void writeFile(const std::string& filepath);
 
 
@@ -94,10 +95,25 @@ std::string File::decompress(const bitVector& vector) {
 	return content;
 }
 
-std::string File::readFile(const std::string& filepath) {
-	if file
+std::pair< std::array<char, 4>, std::string > File::readFile(const std::string& filepath) {
+	std::array<char, 4> format;
+	std::string content;
+	
+	std::string_view view = std::string_view(filepath).substr(filepath.size() - 4);
+	std::copy_n(view.begin(), 4, format.begin());
 
-	return content;
+	if (*format.begin() != '.') {
+		std::cout << "ERROR: invalid input file format\n";
+		throw std::out_of_range("ERROR: invalid input file format\n");
+	}
+
+	// convert char[4] to uint32_t
+	//for (size_t i = 0; i < fileformat.size(); ++i) {
+	//	uint8_t c = fileformat.at(i);
+	//	type += c << ((fileformat.size() - i - 1) * 8);
+	//}
+
+	return { format, "content" };
 }
 
 void File::writeFile(const std::string& filepath) {
@@ -105,8 +121,6 @@ void File::writeFile(const std::string& filepath) {
 
 	// signature
 	file << "huff";
-	
-
 }
 
 

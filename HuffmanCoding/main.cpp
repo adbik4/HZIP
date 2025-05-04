@@ -7,7 +7,7 @@
 
 File* File::instance = nullptr;
 
-uint8_t File::_type;
+std::array<char, 4> File::_format;
 std::string File::_content;
 std::unordered_map<char, Symbol> File::_huffMap;
 HuffmanTree* File::_huffTree = nullptr;
@@ -19,7 +19,7 @@ int main()
 	std::cout << std::fixed << std::setprecision(3);
 
 	// code 
-	File* message = File::getInstance("Hello World!");
+	File* message = File::getInstance("filepath.txt");
 	bitVector bitstream = File::compress();
 	std::cout << message->getMapping() << "\n";
 
