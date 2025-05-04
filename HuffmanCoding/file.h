@@ -4,6 +4,7 @@
 #include <queue>
 #include <utility>
 #include <unordered_map>
+#include <fstream>
 
 #include "types.h"
 #include "tree.h"
@@ -12,14 +13,16 @@
 class File {  // singleton
 private:
 	static File* instance;
+
+	static uint8_t _type;
 	static std::string _content;
 	static std::unordered_map<char, Symbol> _huffMap;
 	static HuffmanTree* _huffTree;
 
 	// private constructor
-	File(std::string str)
+	File(std::string filepath)
 	{
-		_content = str;
+		_content = readFile(filepath);
 		_huffMap = CalcFrequency();
 		_huffTree = new HuffmanTree(_huffMap);
 		_huffTree->encodeTable(_huffMap);
@@ -43,6 +46,8 @@ public:
 	// methods
 	static bitVector compress();
 	static std::string decompress(const bitVector& vector);
+	static std::string readFile(const std::string& filepath);
+	static void writeFile(const std::string& filepath);
 
 
 	// getters
@@ -87,6 +92,21 @@ std::string File::decompress(const bitVector& vector) {
 		content.push_back(_huffTree->decodeChar(tmpPath));
 	}
 	return content;
+}
+
+std::string File::readFile(const std::string& filepath) {
+	if file
+
+	return content;
+}
+
+void File::writeFile(const std::string& filepath) {
+	std::fstream file(filepath, std::ios::trunc);
+
+	// signature
+	file << "huff";
+	
+
 }
 
 

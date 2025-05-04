@@ -33,7 +33,7 @@ public:
 class Symbol {
 public:
 	char character;
-	double freq;
+	float freq;
 	Code encoding;
 
 	Symbol()
@@ -42,13 +42,13 @@ public:
 		encoding{}
 	{}
 
-	Symbol(const double& frequency)
+	Symbol(const float& frequency)
 		: character('\0'),
 		 freq(frequency),
 		encoding{}
 	{}
 
-	Symbol(const char& character, const double& frequency)
+	Symbol(const char& character, const float& frequency)
 		: character(character),
 		 freq(frequency),
 		 encoding{}

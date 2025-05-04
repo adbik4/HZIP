@@ -6,6 +6,8 @@
 #include "types.h"
 
 File* File::instance = nullptr;
+
+uint8_t File::_type;
 std::string File::_content;
 std::unordered_map<char, Symbol> File::_huffMap;
 HuffmanTree* File::_huffTree = nullptr;
