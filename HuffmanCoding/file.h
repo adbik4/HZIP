@@ -76,13 +76,13 @@ std::unordered_map<char, Symbol> File::CalcFrequency() {
 }
 
 bitVector File::compress() {
-	bitVector path;
+	bitVector compressed_data;
 
 	for (char c : _content) {
 		Code encoding = _huffMap.find(c)->second.encoding;
-		path.pushBits(encoding.code, encoding.length);
+		compressed_data.pushBits(encoding.code, encoding.length);
 	}
-	return path;
+	return compressed_data;
 }
 
 std::string File::decompress(const bitVector& vector) {
@@ -117,19 +117,26 @@ std::pair< std::array<char, 4>, std::string > File::readFile(const std::string& 
 }
 
 void File::writeFile(const std::string& filepath) {
-	std::fstream file(filepath, std::ios::trunc | std::ios::out | std::ios::binary);
+	std::fstream file(filepath, std::ios::out | std::ios::trunc | std::ios::binary);
 
-	// signature
+	// signature ----------
 	uint32_t signature = 0x46465548;
 	file.write(reinterpret_cast<char*>(&signature), 4);
 
-	// format
+	// format -------------
 	std::array<char, 4> format = { '.', 't', 'x', 't' };
 	file.write(reinterpret_cast<char*>(&format), 4);
 	
-	// tree length
-	uint32_t tree_length = ntohl(sizeof(_huffTree)); // little endian
+	// tree ---------------
+	std::vector<char> tree_data = _huffTree->flatten();
+	uint32_t tree_length = ntohl(tree_data.size()); // little endian
+
 	file.write(reinterpret_cast<char*>(&tree_length), 4);
+	file.write(tree_data.data(), tree_data.size());
+
+	// file contents -----
+	std::vector<uint8_t> data = compress().data;
+	file.write(reinterpret_cast<char*>(data.data()), data.size());
 
 	file.close();
 }

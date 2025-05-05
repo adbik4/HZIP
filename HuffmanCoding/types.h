@@ -99,13 +99,14 @@ struct Node {
 
 class bitVector {
 private:
-	std::vector<uint8_t> data;
 	uint8_t bitIndex = 0; // current position in the current byte (0..7)
 
 	// private methods
 	void pushBit(bool bit);
 
 public:
+	std::vector<uint8_t> data;
+
 	// methods
 	void pushBits(uint32_t bits, uint8_t count);
 	bool pop_front();

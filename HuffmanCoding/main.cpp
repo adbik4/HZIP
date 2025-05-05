@@ -25,6 +25,8 @@ int main()
 
 	std::cout << "decompression result : " << File::decompress(bitstream) << "\n";
 
+	std::vector<char> list = message->getTree()->flatten();
+
 	File::writeFile("test.huf");
 
 	//	 WHAT THE CODE SHOULD LOOK LIKE

@@ -2,7 +2,6 @@
 #include<queue>
 #include<unordered_map>
 #include <string>
-#include <forward_list>
 
 #include "types.h"
 #include "file.h"
@@ -30,7 +29,7 @@ private:
 public:
 	// constructor / destructor
 	HuffmanTree(const std::unordered_map<char, Symbol>& probMap);
-	HuffmanTree(const std::forward_list<Node*>& flist);
+	HuffmanTree(const std::vector<char>& vec);
 
 	~HuffmanTree() {
 		deletePostOrder(rootNode);
@@ -39,7 +38,7 @@ public:
 	// methods
 	void encodeTable(std::unordered_map<char, Symbol>& map);
 	char decodeChar(bitVector& path) const;
-	std::forward_list<Node*> flatten();
+	std::vector<char> flatten() const;
 
 };
 
@@ -67,7 +66,7 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 	rootNode = probQueue.top();
 }
 
-HuffmanTree::HuffmanTree(const std::forward_list<Node*>& flist) {};  // to implement
+HuffmanTree::HuffmanTree(const std::vector<char>& vec) {};  // to implement
 
 // methods definitions
 void HuffmanTree::encodeTable(std::unordered_map<char, Symbol>& map) {
@@ -135,6 +134,22 @@ void HuffmanTree::deletePostOrder(struct Node* node) {
 	delete node;
 }
 
-std::forward_list<Node*> HuffmanTree::flatten() {
-	// to implement
+std::vector<char> HuffmanTree::flatten() const {
+	std::vector<char> vec;
+	std::queue<Node*> queue;
+
+	Node* next;
+	queue.push(rootNode);
+	while (!queue.empty()) {
+		next = queue.front();
+		if (next->left != nullptr) {
+			queue.push(next->left);
+		}
+		if (next->right != nullptr) {
+			queue.push(next->right);
+		}
+		vec.push_back(next->data.character);
+		queue.pop();
+	}
+	return vec;
 }
