@@ -2,6 +2,7 @@
 #include<queue>
 #include<unordered_map>
 #include <string>
+#include <forward_list>
 
 #include "types.h"
 #include "file.h"
@@ -29,6 +30,7 @@ private:
 public:
 	// constructor / destructor
 	HuffmanTree(const std::unordered_map<char, Symbol>& probMap);
+	HuffmanTree(const std::forward_list<Node*>& flist);
 
 	~HuffmanTree() {
 		deletePostOrder(rootNode);
@@ -37,6 +39,8 @@ public:
 	// methods
 	void encodeTable(std::unordered_map<char, Symbol>& map);
 	char decodeChar(bitVector& path) const;
+	std::forward_list<Node*> flatten();
+
 };
 
 // constructor definition
@@ -63,6 +67,7 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 	rootNode = probQueue.top();
 }
 
+HuffmanTree::HuffmanTree(const std::forward_list<Node*>& flist) {};  // to implement
 
 // methods definitions
 void HuffmanTree::encodeTable(std::unordered_map<char, Symbol>& map) {
@@ -128,4 +133,8 @@ void HuffmanTree::deletePostOrder(struct Node* node) {
 	deletePostOrder(node->left);
 	deletePostOrder(node->right);
 	delete node;
+}
+
+std::forward_list<Node*> HuffmanTree::flatten() {
+	// to implement
 }

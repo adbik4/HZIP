@@ -25,6 +25,8 @@ int main()
 
 	std::cout << "decompression result : " << File::decompress(bitstream) << "\n";
 
+	File::writeFile("test.huf");
+
 	//	 WHAT THE CODE SHOULD LOOK LIKE
 	//	 decompress:
 	//	File file = openFile("filepath.txt"); // automatically decompresses, reads tables and trees, fills in its properties

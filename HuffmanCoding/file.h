@@ -5,6 +5,7 @@
 #include <utility>
 #include <unordered_map>
 #include <fstream>
+#include <array>
 
 #include "types.h"
 #include "tree.h"
@@ -95,18 +96,25 @@ std::string File::decompress(const bitVector& vector) {
 }
 
 std::string File::readFile(const std::string& filepath) {
-	if file
-
-	return content;
+	return "content";
 }
 
 void File::writeFile(const std::string& filepath) {
-	std::fstream file(filepath, std::ios::trunc);
+	std::fstream file(filepath, std::ios::trunc | std::ios::out | std::ios::binary);
 
 	// signature
-	file << "huff";
-	
+	uint32_t signature = 0x46465548;
+	file.write(reinterpret_cast<char*>(&signature), 4);
 
+	// format
+	std::array<char, 4> format = { '.', 't', 'x', 't' };
+	file.write(reinterpret_cast<char*>(&format), 4);
+	
+	// tree length
+	uint32_t tree_length = ntohl(sizeof(_huffTree)); // little endian
+	file.write(reinterpret_cast<char*>(&tree_length), 4);
+
+	file.close();
 }
 
 
