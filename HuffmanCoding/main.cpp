@@ -19,7 +19,7 @@ int main()
 	std::cout << std::fixed << std::setprecision(3);
 
 	// code 
-	File* message = File::getInstance("filepath.txt");
+	File* message = File::getInstance("test.huf");
 	bitVector bitstream = File::compress();
 	std::cout << message->getMapping() << "\n";
 
@@ -27,7 +27,6 @@ int main()
 
 	std::vector<char> list = message->getTree()->flatten();
 
-	File::writeFile("test.huf");
 
 	//	 WHAT THE CODE SHOULD LOOK LIKE
 	//	 decompress:

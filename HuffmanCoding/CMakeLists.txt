@@ -3,7 +3,7 @@
 #
 
 # Add source to this project's executable.
-add_executable (SmartCpp-HuffmanCoding "main.cpp" "file.h" "tree.h"  )
+add_executable (SmartCpp-HuffmanCoding "main.cpp" "file.h" "tree.h"   "io.cpp" "tree.cpp" "types.cpp" "file.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET SmartCpp-HuffmanCoding PROPERTY CXX_STANDARD 20)
