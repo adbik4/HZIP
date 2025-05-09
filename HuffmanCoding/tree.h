@@ -4,7 +4,6 @@
 #include <string>
 
 #include "types.h"
-#include "file.h"
 
 
 class HuffmanTree {

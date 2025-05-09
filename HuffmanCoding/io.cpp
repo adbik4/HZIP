@@ -1,4 +1,5 @@
 #include "file.h"
+#include <winsock.h>
 // description:
 
 std::tuple<std::array<char, 4>, std::string, HuffmanTree*> File::readHuffFile(const std::string& filepath) {

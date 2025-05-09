@@ -9,7 +9,6 @@
 #include "types.h"
 #include "tree.h"
 
-
 class File {  // singleton
 private:
 	static File* instance;
@@ -62,3 +61,6 @@ public:
 	std::unordered_map<char, Symbol> getMapping() const { return _huffMap; }
 	HuffmanTree* getTree() const { return _huffTree; }
 };
+
+// overloads
+std::ostream& operator<<(std::ostream& os, const std::unordered_map<char, Symbol>& map);

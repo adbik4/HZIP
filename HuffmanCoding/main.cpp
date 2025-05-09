@@ -5,13 +5,6 @@
 #include "tree.h"
 #include "types.h"
 
-File* File::instance = nullptr;
-
-std::array<char, 4> File::_format;
-std::string File::_content;
-std::unordered_map<char, Symbol> File::_huffMap;
-HuffmanTree* File::_huffTree = nullptr;
-
 int main()
 {
 	// init
