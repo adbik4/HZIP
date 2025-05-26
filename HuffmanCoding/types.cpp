@@ -49,3 +49,27 @@ bool bitVector::pop_front() {
 bool bitVector::empty() {
 	return data.empty();
 }
+
+std::string bitVector::toString() const {
+	std::string result;
+	for (uint8_t byte : data) {
+		std::string substr;
+		// convert to binary
+		while (byte > 0) {
+			if (byte % 2) {
+				substr.insert(substr.begin(), '1');
+			}
+			else {
+				substr.insert(substr.begin(), '0');
+			}
+			byte >>= 1;
+		}
+
+		// pad with zeros
+		while (substr.size() < 8) {
+			substr.insert(substr.begin(), '0');
+		}
+		result.append(' ' + substr);
+	}
+	return result;
+}

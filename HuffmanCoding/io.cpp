@@ -1,8 +1,8 @@
 #include "file.h"
-#include <winsock.h>
 // description:
 
-std::tuple<std::array<char, 4>, std::string, HuffmanTree*> File::readHuffFile(const std::string& filepath) {
+std::tuple<std::array<char, 4>, std::string, HuffmanTree*>
+File::readHuffFile(const std::string& filepath) {
 	std::array<char, 4> format;
 	std::array<char, 4> buffer32;
 	std::string content;
@@ -50,7 +50,10 @@ void File::writeFile(const std::string& filepath) {
 	file.write(reinterpret_cast<char*>(&format), 4);
 
 	// pack tree ----------
-	std::vector<char> tree_data = _huffTree->flatten();
+	bitVector mask;
+	std::vector<char> tree_data;
+	std::tie(mask, tree_data) = _huffTree->flatten();
+	// RETHINK THIS ENTIRE PART !!!!
 	uint32_t tree_length = ntohl(tree_data.size()); // little endian
 
 	file.write(reinterpret_cast<char*>(&tree_length), 4);

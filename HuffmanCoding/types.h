@@ -70,6 +70,9 @@ public:
 		else if (sym.character == '\t') {
 			token = "[tab]";
 		}
+		else if (sym.character == '\0') {
+			token = "[null]";
+		}
 
 		token.push_back(' ');
 		while (token.length() < MAX_TOKEN_LEN) {
@@ -114,4 +117,11 @@ public:
 	void pushBits(uint32_t bits, uint8_t count);
 	bool pop_front();
 	bool empty();
+	std::string toString() const;
+
+	// overloads
+	friend std::ostream& operator<<(std::ostream& os, const bitVector& bitv) {
+		os << bitv.toString();
+		return os;
+	}
 };

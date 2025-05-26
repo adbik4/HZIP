@@ -25,7 +25,13 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 	rootNode = probQueue.top();
 }
 
-HuffmanTree::HuffmanTree(const std::vector<char>& vec) {};  // to implement
+HuffmanTree::HuffmanTree(const std::vector<char>& vec) {
+	// reconstruct the tree from a flattened list
+	//std::vector tmp = vec;
+	//while (!tmp.empty()) {
+
+	//}
+}
 
 // methods definitions
 void HuffmanTree::encodeTable(std::unordered_map<char, Symbol>& map) {
@@ -94,22 +100,25 @@ void HuffmanTree::deletePostOrder(struct Node* node) {
 	delete node;
 }
 
-std::vector<char> HuffmanTree::flatten() const {
-	std::vector<char> vec;
-	std::queue<Node*> queue;
+std::pair<bitVector, std::vector<char>> HuffmanTree::flatten() const {
+	//using preorder traversal
+	std::vector<char> data;
+	bitVector mask;
 
-	Node* next;
-	queue.push(rootNode);
-	while (!queue.empty()) {
-		next = queue.front();
-		if (next->left != nullptr) {
-			queue.push(next->left);
-		}
-		if (next->right != nullptr) {
-			queue.push(next->right);
-		}
-		vec.push_back(next->data.character);
-		queue.pop();
+	mask.pushBits(1, 1); // for the root node
+	traverseFlattening(rootNode, mask, data);
+
+	return { mask, data };
+}
+
+void HuffmanTree::traverseFlattening(Node* node, bitVector mask, std::vector<char>& data) const {
+	if (node == nullptr) {
+		mask.pushBits(0, 1);
+		return;
 	}
-	return vec;
+	// edit this logic 
+	data.push_back(node->data.character);
+	mask.pushBits(1, 1);
+	traverseFlattening(node->left, mask, data);
+	traverseFlattening(node->right, mask, data);
 }

@@ -16,9 +16,25 @@ int main()
 	bitVector bitstream = File::compress();
 	std::cout << message->getMapping() << "\n";
 
-	std::cout << "decompression result : " << File::decompress(bitstream) << "\n";
+	//std::cout << "decompression result : " << File::decompress(bitstream) << "\n";
 
-	std::vector<char> list = message->getTree()->flatten();
+	//std::vector<char> fl_tree = { 'A', 'B', 'C', 'D', 'E', 'F', 'G'};
+	//HuffmanTree tree(fl_tree);
+
+	auto tree = message->getTree();
+
+	bitVector mask;
+	std::vector<char> tree_data;
+	std::tie(mask, tree_data) = tree->flatten();
+	std::cout << "mask: " << mask << '\n';
+	for (char x : tree_data) {
+		if (x == '\0') {
+			std::cout << "[nullptr]\n";
+		}
+		else {
+			std::cout << x << '\n';
+		}
+	}
 
 
 	//	 WHAT THE CODE SHOULD LOOK LIKE

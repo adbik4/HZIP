@@ -1,6 +1,6 @@
 #pragma once
-#include<queue>
-#include<unordered_map>
+#include <queue>
+#include <unordered_map>
 #include <string>
 
 #include "types.h"
@@ -24,6 +24,7 @@ private:
 	void deletePostOrder(struct Node* node);
 	void traverseEncoding(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info);
 	char traverseDecoding(Node* node, bitVector& path) const;
+	void traverseFlattening(Node* node, bitVector mask, std::vector<char>& data) const;
 
 public:
 	// constructor / destructor
@@ -37,6 +38,5 @@ public:
 	// methods
 	void encodeTable(std::unordered_map<char, Symbol>& map);
 	char decodeChar(bitVector& path) const;
-	std::vector<char> flatten() const;
-
+	std::pair<bitVector, std::vector<char>> flatten() const;
 };

@@ -5,6 +5,8 @@
 #include <fstream>
 #include <string_view>
 #include <array>
+#include <winsock.h>
+
 
 #include "types.h"
 #include "tree.h"
@@ -21,7 +23,7 @@ private:
 	// private constructor
 	File(std::string filepath)
 	{
-		std::tie(_format, _content) = std::pair<std::array<char, 4>, std::string>({ {'.', 't', 'x', 't'}, "content"});
+		std::tie(_format, _content) = std::pair<std::array<char, 4>, std::string>({ {'.', 't', 'x', 't'}, "AAAAABBBCCD"}); 		// TEMPORARY FOR DEBUGGING
 		_huffMap = CalcFrequency();
 		_huffTree = new HuffmanTree(_huffMap);
 		_huffTree->encodeTable(_huffMap);
