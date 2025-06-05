@@ -24,7 +24,7 @@ private:
 	void deletePostOrder(struct Node* node);
 	void traverseEncoding(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info);
 	char traverseDecoding(Node* node, bitVector& path) const;
-	void traverseFlattening(Node* node, bitVector mask, std::vector<char>& data) const;
+	void traverseFlattening(Node* node, bitVector& mask, std::vector<char>& data) const;
 
 public:
 	// constructor / destructor

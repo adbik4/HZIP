@@ -1,5 +1,27 @@
 #include "file.h"
 // description:
+// This file contains all of the basic functions for reading and writing .huf files
+
+uint32_t toLittleEndian(uint32_t value) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+	return value;  // Already little endian
+#else
+	return ((value & 0x000000FF) << 24) |
+		((value & 0x0000FF00) << 8) |
+		((value & 0x00FF0000) >> 8) |
+		((value & 0xFF000000) >> 24);
+#endif
+}
+
+void writeTree(std::ofstream& file, HuffmanTree* _huffTree) {
+	bitVector mask;
+	std::vector<char> tree_data;
+	std::tie(mask, tree_data) = _huffTree->flatten();
+
+	uint32_t tree_length = toLittleEndian(tree_data.size()); // little endian
+	file.write(reinterpret_cast<char*>(&tree_length), 4);
+	file.write(tree_data.data(), tree_data.size());
+}
 
 std::tuple<std::array<char, 4>, std::string, HuffmanTree*>
 File::readHuffFile(const std::string& filepath) {
@@ -50,14 +72,7 @@ void File::writeFile(const std::string& filepath) {
 	file.write(reinterpret_cast<char*>(&format), 4);
 
 	// pack tree ----------
-	bitVector mask;
-	std::vector<char> tree_data;
-	std::tie(mask, tree_data) = _huffTree->flatten();
-	// RETHINK THIS ENTIRE PART !!!!
-	uint32_t tree_length = ntohl(tree_data.size()); // little endian
-
-	file.write(reinterpret_cast<char*>(&tree_length), 4);
-	file.write(tree_data.data(), tree_data.size());
+	writeTree(file, _huffTree);
 
 	// file contents -----
 	std::vector<uint8_t> data = compress().data;

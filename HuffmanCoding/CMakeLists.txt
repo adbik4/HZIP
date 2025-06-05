@@ -10,7 +10,4 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET SmartCpp-HuffmanCoding PROPERTY CXX_STANDARD_REQUIRED ON)
 endif()
 
-# Link system library (Windows Sockets)
-target_link_libraries(SmartCpp-HuffmanCoding PRIVATE ws2_32)
-
 # TODO: Add tests and install targets if needed.

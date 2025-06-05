@@ -5,8 +5,6 @@
 #include <fstream>
 #include <string_view>
 #include <array>
-#include <winsock.h>
-
 
 #include "types.h"
 #include "tree.h"

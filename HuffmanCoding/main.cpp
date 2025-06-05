@@ -26,6 +26,7 @@ int main()
 	bitVector mask;
 	std::vector<char> tree_data;
 	std::tie(mask, tree_data) = tree->flatten();
+
 	std::cout << "mask: " << mask << '\n';
 	for (char x : tree_data) {
 		if (x == '\0') {

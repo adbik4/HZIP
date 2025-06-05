@@ -105,18 +105,16 @@ std::pair<bitVector, std::vector<char>> HuffmanTree::flatten() const {
 	std::vector<char> data;
 	bitVector mask;
 
-	mask.pushBits(1, 1); // for the root node
 	traverseFlattening(rootNode, mask, data);
 
 	return { mask, data };
 }
 
-void HuffmanTree::traverseFlattening(Node* node, bitVector mask, std::vector<char>& data) const {
+void HuffmanTree::traverseFlattening(Node* node, bitVector& mask, std::vector<char>& data) const {
 	if (node == nullptr) {
 		mask.pushBits(0, 1);
 		return;
 	}
-	// edit this logic 
 	data.push_back(node->data.character);
 	mask.pushBits(1, 1);
 	traverseFlattening(node->left, mask, data);
