@@ -25,12 +25,14 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 	rootNode = probQueue.top();
 }
 
-HuffmanTree::HuffmanTree(const std::vector<char>& vec) {
+HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const bitVector& mask) {
 	// reconstruct the tree from a flattened list
-	//std::vector tmp = vec;
-	//while (!tmp.empty()) {
+	auto tmp = tree_data;
 
-	//}
+	rootNode = 
+	while (!tmp.empty()) {
+
+	}
 }
 
 // methods definitions

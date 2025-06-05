@@ -69,6 +69,7 @@ public:
 	void pushBits(uint32_t bits, uint8_t count);
 	bool pop_front();
 	bool empty();
+	uint32_t getLength() const;
 	std::string toString() const;
 };
 

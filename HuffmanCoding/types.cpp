@@ -73,9 +73,14 @@ bool bitVector::empty() {
 	return data.empty();
 }
 
+uint32_t bitVector::getLength() const {
+	// length of the data in bits
+	return 8 * (data.size() - 1) + bitIndex; 
+}
+
 std::string bitVector::toString() const {
 	std::string result;
-	unsigned int curr_len = 8*(data.size()-1) + bitIndex; // length of the data in bits
+	uint32_t curr_len = this->getLength();
 
 	for (uint8_t byte : data) {
 		std::string substr;

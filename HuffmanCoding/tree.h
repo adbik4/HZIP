@@ -28,8 +28,8 @@ private:
 
 public:
 	// constructor / destructor
-	HuffmanTree(const std::unordered_map<char, Symbol>& probMap);
-	HuffmanTree(const std::vector<char>& vec);
+	HuffmanTree(const std::unordered_map<char, Symbol>& probMap);	// constructs tree from scratch
+	HuffmanTree(const std::vector<char>& vec, const bitVector& mask);						// reconstructs tree based on flattened data
 
 	~HuffmanTree() {
 		deletePostOrder(rootNode);

@@ -17,8 +17,12 @@ void writeTree(std::ofstream& file, HuffmanTree* _huffTree) {
 	bitVector mask;
 	std::vector<char> tree_data;
 	std::tie(mask, tree_data) = _huffTree->flatten();
+	
+	// store information about the nodes
+	uint32_t mask_length = toLittleEndian(mask.getLength()); // length of the data block
 
-	uint32_t tree_length = toLittleEndian(tree_data.size()); // little endian
+	// store the actual data
+	uint32_t tree_length = toLittleEndian(tree_data.size()); // length of the data block
 	file.write(reinterpret_cast<char*>(&tree_length), 4);
 	file.write(tree_data.data(), tree_data.size());
 }
