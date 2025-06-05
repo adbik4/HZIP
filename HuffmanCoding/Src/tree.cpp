@@ -3,6 +3,7 @@
 
 // constructor definition
 HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
+	// contructor for creating a tree for compression
 	// THIS IS THE MAIN HUFFMAN CODE LOGIC
 
 	std::priority_queue<Node*, std::vector<Node*>, NodeComp> probQueue;
@@ -26,15 +27,40 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 }
 
 HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const bitVector& mask) {
+	// contructor for recreating a tree for decompression
 	// reconstruct the tree from a flattened list
 	uint32_t data_idx = 1;
 	uint32_t mask_idx = 1;
-	std::queue<char> q;
+	std::queue<Node*> q;
 
-	q.push(tree_data[0]); // root node
+	rootNode = new Node(tree_data[0]);
+	q.push(rootNode); // root node
 
 	while (!q.empty()) {
-		rootNode = new Node(tree_data[data_idx]);
+
+		Node* currNode = q.back();
+		if (mask[mask_idx]) {
+			// mask 1:
+			// continue
+			Node* newNode = new Node(tree_data[data_idx]);
+			++data_idx;
+
+			if (currNode->left == nullptr) {
+				currNode->left = newNode;
+			}
+			else if (currNode->right == nullptr) {
+				currNode->right = newNode;
+			}
+			else {
+				q.pop(); // node is filled and can be removed from the queue
+				q.push(newNode);
+			}
+		}
+		else {
+			// mask 0:
+			q.pop(); // end branch
+		}
+		++mask_idx;
 	}
 }
 
@@ -121,11 +147,18 @@ std::pair<bitVector, std::vector<char>> HuffmanTree::flatten() const {
 void HuffmanTree::traverseFlattening(Node* node, bitVector& mask, std::vector<char>& data) const {
 	// fills in data and mask with information about the tree
 	if (node == nullptr) {
-		mask.pushBits(0, 1);
-		return;
+		// don't write two 0's in a row
+		uint32_t lastIndex = mask.getLength() - 1;
+		bool lastMaskBit = mask[lastIndex];
+		if (lastMaskBit) {
+			mask.pushBit(0);
+			return;
+		} else {
+			return;
+		}
 	}
 	data.push_back(node->data.character);
-	mask.pushBits(1, 1);
+	mask.pushBit(1);
 	traverseFlattening(node->left, mask, data);
 	traverseFlattening(node->right, mask, data);
 }

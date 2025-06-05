@@ -26,7 +26,7 @@ std::string Code::toString() const {
 }
 
 void bitVector::pushBit(bool bit) {
-	if (bitIndex == 0) {
+	if (data.size() == 0 && bitIndex == 0) {
 		data.push_back(0);
 	}
 	if (bit) {
@@ -34,7 +34,10 @@ void bitVector::pushBit(bool bit) {
 	}
 
 	++bitIndex;
-	bitIndex &= 7;
+	if (bitIndex == 8) {
+		bitIndex = 0;
+		data.push_back(0);
+	}
 }
 
 void bitVector::pushBits(uint32_t bits, uint8_t count) {
@@ -49,7 +52,7 @@ bool bitVector::empty() {
 
 uint32_t bitVector::getLength() const {
 	// length of the data in bits
-	return 8 * (data.size() - 1) + bitIndex; 
+	return 8 * (data.size()-1) + bitIndex; 
 }
 
 std::string bitVector::toString() const {
@@ -120,6 +123,7 @@ std::ostream& operator<<(std::ostream& os, const Symbol& sym) {
 	return os;
 }
 
-bool bitVector::operator[](int idx) {
-	return data[idx / BYTE_LEN] & (1 << (BYTE_LEN-1 - idx % BYTE_LEN));
+bool bitVector::operator[](const uint32_t& idx) const{
+	// {{0,1,2,3,4,5,6,7}, {8,9,10,11,12,13,14,15}, ...}
+	return data.at(idx / BYTE_LEN) & (1 << (BYTE_LEN-1 - idx % BYTE_LEN));
 }
