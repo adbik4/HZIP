@@ -38,8 +38,9 @@ std::string File::decompress(const bitVector& vector) {
 	bitVector tmpPath = vector;
 	std::string content;
 
-	while (!tmpPath.empty()) {
-		content.push_back(_huffTree->decodeChar(tmpPath));
+	uint32_t start_idx = 0;
+	while (start_idx < vector.getLength()) {
+		content.push_back(_huffTree->decodeChar(tmpPath, start_idx));
 	}
 	return content;
 }

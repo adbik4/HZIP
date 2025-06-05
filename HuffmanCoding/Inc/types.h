@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#define BYTE_LEN 8
+
 class Code {
 public:
 	uint32_t code;
@@ -67,10 +69,12 @@ public:
 
 	// methods
 	void pushBits(uint32_t bits, uint8_t count);
-	bool pop_front();
 	bool empty();
 	uint32_t getLength() const;
 	std::string toString() const;
+
+	//overloads
+	bool operator[](int idx);
 };
 
 //overloads

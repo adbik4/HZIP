@@ -43,32 +43,6 @@ void bitVector::pushBits(uint32_t bits, uint8_t count) {
 	}
 }
 
-bool bitVector::pop_front() {
-	if (data.empty()) {
-		std::cout << "ERROR: Cannot pop from empty bitVector.\n";
-		throw std::out_of_range("Cannot pop from empty bitVector.");
-	}
-
-	bool firstElement = *data.begin() & 0x80;
-	for (size_t i = 0; i < data.size(); ++i) {
-		if (i != data.size() - 1) {
-			// shift left by one bit (with carry)
-			data.at(i) = (data.at(i) << 1) + (data.at(i + 1) >> 7);
-		}
-		else {
-			// shift left by one bit
-			data.at(i) <<= 1;
-		}
-	}
-
-	--bitIndex;
-	bitIndex &= 7;
-	if (bitIndex == 0) {
-		data.erase(data.end() - 1);
-	}
-	return firstElement;
-}
-
 bool bitVector::empty() {
 	return data.empty();
 }
@@ -144,4 +118,8 @@ std::ostream& operator<<(std::ostream& os, const Symbol& sym) {
 
 	os << token << "> freq: " << sym.freq << ", encoding: " << sym.encoding.toString();
 	return os;
+}
+
+bool bitVector::operator[](int idx) {
+	return data[idx / BYTE_LEN] & (1 << (BYTE_LEN-1 - idx % BYTE_LEN));
 }

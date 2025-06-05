@@ -13,29 +13,26 @@ int main()
 
 	// code 
 	File* message = File::getInstance("test.huf");
-	bitVector bitstream = File::compress();
+	bitVector compressed_data = File::compress();
 	std::cout << message->getMapping() << "\n";
 
-	//std::cout << "decompression result : " << File::decompress(bitstream) << "\n";
+	std::cout << "decompression result : " << File::decompress(compressed_data) << "\n";
 
-	//std::vector<char> fl_tree = { 'A', 'B', 'C', 'D', 'E', 'F', 'G'};
-	//HuffmanTree tree(fl_tree);
+	//auto tree = message->getTree();
 
-	auto tree = message->getTree();
+	//bitVector mask;
+	//std::vector<char> tree_data;
+	//std::tie(mask, tree_data) = tree->flatten();
 
-	bitVector mask;
-	std::vector<char> tree_data;
-	std::tie(mask, tree_data) = tree->flatten();
-
-	std::cout << "mask: " << mask << '\n';
-	for (char x : tree_data) {
-		if (x == '\0') {
-			std::cout << "[nullptr]\n";
-		}
-		else {
-			std::cout << x << '\n';
-		}
-	}
+	//std::cout << "mask: " << mask << '\n';
+	//for (char x : tree_data) {
+	//	if (x == '\0') {
+	//		std::cout << "[nullptr]\n";
+	//	}
+	//	else {
+	//		std::cout << x << '\n';
+	//	}
+	//}
 
 
 	//	 WHAT THE CODE SHOULD LOOK LIKE

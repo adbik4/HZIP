@@ -27,11 +27,14 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 
 HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const bitVector& mask) {
 	// reconstruct the tree from a flattened list
-	auto tmp = tree_data;
+	uint32_t data_idx = 1;
+	uint32_t mask_idx = 1;
+	std::queue<char> q;
 
-	rootNode = 
-	while (!tmp.empty()) {
+	q.push(tree_data[0]); // root node
 
+	while (!q.empty()) {
+		rootNode = new Node(tree_data[data_idx]);
 	}
 }
 
@@ -69,11 +72,13 @@ void HuffmanTree::traverseEncoding(struct Node* node, std::unordered_map<char, S
 	info.encoding >>= 1;
 }
 
-char HuffmanTree::decodeChar(bitVector& path) const {
-	return traverseDecoding(rootNode, path);
+char HuffmanTree::decodeChar(bitVector& path, uint32_t& start_idx) const {
+	// public method for accessing traverseDecoding() and rootNode
+	char decoded_char = traverseDecoding(rootNode, path, start_idx);
+	return decoded_char;
 }
 
-char HuffmanTree::traverseDecoding(Node* node, bitVector& path) const {
+char HuffmanTree::traverseDecoding(Node* node, bitVector& path, uint32_t& i) const {
 	// this function traverses the tree using a path as instructions to decode a symbol.
 	// Every time it reads zero it takes a left branch, one - a right branch.
 	// When it reaches a leaf it returns the decoded character
@@ -83,13 +88,14 @@ char HuffmanTree::traverseDecoding(Node* node, bitVector& path) const {
 	}
 
 	char decodedChar = '\0';
-	if (path.pop_front()) {
-		decodedChar = traverseDecoding(node->right, path);
+	if (path[i]) {
+		++i;
+		decodedChar = traverseDecoding(node->right, path, i);
 	}
 	else {
-		decodedChar = traverseDecoding(node->left, path);
+		++i;
+		decodedChar = traverseDecoding(node->left, path, i);
 	}
-
 	return decodedChar;
 }
 
@@ -113,6 +119,7 @@ std::pair<bitVector, std::vector<char>> HuffmanTree::flatten() const {
 }
 
 void HuffmanTree::traverseFlattening(Node* node, bitVector& mask, std::vector<char>& data) const {
+	// fills in data and mask with information about the tree
 	if (node == nullptr) {
 		mask.pushBits(0, 1);
 		return;
