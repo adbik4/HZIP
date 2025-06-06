@@ -3,7 +3,7 @@
 #
 
 # Add source to this project's executable.
-add_executable (SmartCpp-HuffmanCoding "Src/main.cpp" "Inc/file.h" "Inc/tree.h"   "Src/io.cpp" "Src/tree.cpp" "Src/types.cpp" "Src/file.cpp")
+add_executable (SmartCpp-HuffmanCoding "Src/main.cpp" "Inc/file.h" "Inc/tree.h"   "Src/io.cpp" "Src/tree.cpp" "Src/types.cpp" "Src/file.cpp" "Inc/general.h" "Src/general.cpp")
 
 target_include_directories(SmartCpp-HuffmanCoding PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc

@@ -35,7 +35,7 @@ public:
 	// methods
 	void encodeTable(std::unordered_map<char, Symbol>& map);
 	char decodeChar(const std::vector<char>& path, uint32_t& start_idx) const;
-	std::pair<bitVector, std::vector<char>> flatten() const;
+	std::pair<std::vector<char>, std::vector<char>> flatten() const;
 
 	~HuffmanTree() {
 		deletePostOrder(rootNode);

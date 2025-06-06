@@ -11,10 +11,10 @@ int main()
 	SetConsoleOutputCP(1250);
 	std::cout << std::fixed << std::setprecision(3);
 
-	// code 1
-	std::shared_ptr<File> message = File::getInstance("filepath.txt");
-	message->writeFile("test_file.huf");
-	std::cout << "DONE \n";
+	// code
+	std::shared_ptr<File> message = File::getInstance("test_file.huf");
+	std::shared_ptr<HuffmanTree> tree = message->getTree();
+	std::cout << "file contents: " << message->getMapping() << "\n";
 
 	//	 WHAT THE CODE SHOULD LOOK LIKE
 	//	 decompress:

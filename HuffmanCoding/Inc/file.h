@@ -3,7 +3,6 @@
 #include <string>
 #include <unordered_map>
 #include <fstream>
-#include <string_view>
 #include <array>
 #include <memory>
 
@@ -15,37 +14,12 @@ private:
 	static std::shared_ptr<File> instance;
 
 	static std::array<char, 4> _format;
-	static std::string _content;
+	static std::vector<char> _content;
 	static std::unordered_map<char, Symbol> _huffMap;
-	static std::unique_ptr<HuffmanTree> _huffTree;
+	static std::shared_ptr<HuffmanTree> _huffTree;
 
 	// private constructor
-	File(std::string filepath)
-	{
-		std::string extension;
-		if (extension == ".huf") {
-			// decompression
-			std::tie(_format, _content, _huffTree) = readHuffFile();
-			// later add a function to write back the original file data
-		}
-		else {
-			// compression
-			std::tie(_format, _content) = readSourceFile();
-			_huffMap = CalcFrequency();
-			_huffTree = std::make_unique<HuffmanTree>(_huffMap);
-			_huffTree->encodeTable(_huffMap);
-		}
-		//std::tie(_format, _content) = std::pair<std::array<char, 4>, std::string>({ {'.', 't', 'x', 't'}, "Something reaaaaaally looooooong"}); // TEMPORARY FOR DEBUGGING
-		//_huffMap = CalcFrequency();
-		//_huffTree = std::make_unique<HuffmanTree>(_huffMap);
-		//_huffTree->encodeTable(_huffMap);
-	}
-
-	//File(std::string filepath)
-	//{
-	//	auto [_format, _content, _huffTree] = readHuffFile(filepath);
-	//	_huffMap = CalcFrequency();
-	//}
+	File(std::string filepath);
 
 	// private methods
 	std::unordered_map<char, Symbol> CalcFrequency();
@@ -66,14 +40,14 @@ public:
 	static bitVector compress();
 	static std::string decompress(const std::vector<char>& vector);
 
-	static std::tuple<std::array<char, 4>, std::vector<char>, std::unique_ptr<HuffmanTree>>  readHuffFile(const std::string& filepath);
+	static std::tuple<std::array<char, 4>, std::vector<char>, std::shared_ptr<HuffmanTree>>  readHuffFile(const std::string& filepath);
 	static void writeFile(const std::string& filepath);
 
 
 	// getters
-	std::string getContent() const { return _content; }
+	std::string getContent() const { return std::string(_content.begin(), _content.end()); }
 	std::unordered_map<char, Symbol> getMapping() const { return _huffMap; }
-	std::unique_ptr<HuffmanTree> getTree() const { return std::move(_huffTree); }
+	std::shared_ptr<HuffmanTree> getTree() const { return _huffTree; }
 };
 
 // overloads

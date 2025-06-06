@@ -143,14 +143,14 @@ char HuffmanTree::traverseDecoding(Node* node, const std::vector<char>& path, ui
 	return decodedChar;
 }
 
-std::pair<bitVector, std::vector<char>> HuffmanTree::flatten() const {
+std::pair<std::vector<char>, std::vector<char>> HuffmanTree::flatten() const {
 	//using preorder traversal
 	std::vector<char> data;
 	bitVector mask;
 
 	traverseFlattening(rootNode, mask, data);
 
-	return { mask, data };
+	return { mask._data, data};
 }
 
 void HuffmanTree::traverseFlattening(Node* node, bitVector& mask, std::vector<char>& data) const {

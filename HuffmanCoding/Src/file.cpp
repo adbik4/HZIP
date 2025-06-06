@@ -1,12 +1,38 @@
 #include "file.h"
-// description: main method definitions
+#include <string_view>
+// description: main file method definitions
 
 std::shared_ptr<File> File::instance = nullptr;
 
 std::array<char, 4> File::_format;
-std::string File::_content;
+std::vector<char> File::_content;
 std::unordered_map<char, Symbol> File::_huffMap;
-std::unique_ptr<HuffmanTree> File::_huffTree = nullptr;
+std::shared_ptr<HuffmanTree> File::_huffTree = nullptr;
+
+File::File(std::string filepath)
+{
+	// cut out the last 4 characters (the file extension)
+	std::array<char, 4> extension;
+	std::string_view view = std::string_view(filepath).substr(filepath.size() - 4);
+	std::copy_n(view.begin(), 4, extension.begin());
+
+	if (extension == std::array<char, 4>({'.', 'h', 'u', 'f'})) {
+		// decompression
+		std::tie(_format, _content, _huffTree) = readHuffFile(filepath);
+		// find a way to recreate a new file with the original files data
+	}
+	else {
+		// compression
+		//std::tie(_format, _content) = readSourceFile();
+		_format = std::array<char, 4>({ '.', 't', 'x', 't' });
+		std::string text = "AAAAABBBCCD";
+		_content = std::vector<char>(text.begin(), text.end());
+		_huffMap = CalcFrequency();
+		_huffTree = std::make_shared<HuffmanTree>(_huffMap);
+		_huffTree->encodeTable(_huffMap);
+		writeFile("test_file.huf");
+	}
+}
 
 std::unordered_map<char, Symbol> File::CalcFrequency() {
 	const double N = static_cast<double>(_content.size());

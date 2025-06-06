@@ -73,9 +73,11 @@ private:
 	uint8_t bitIndex = 0; // current position in the current byte (0..7)
 
 public:
-	std::vector<uint8_t> data;
+	std::vector<char> _data;
 
 	// methods
+	bitVector() = default;
+	bitVector(const std::vector<char> vec);
 	void pushBit(bool bit);
 	void pushBits(uint32_t bits, uint8_t count);
 	bool empty();
