@@ -112,6 +112,15 @@ char HuffmanTree::decodeChar(bitVector& path, uint32_t& start_idx) const {
 	return decoded_char;
 }
 
+void HuffmanTree::deletePostOrder(struct Node* node) {
+	if (node == nullptr) {
+		return;
+	}
+	deletePostOrder(node->left);
+	deletePostOrder(node->right);
+	delete node;
+}
+
 char HuffmanTree::traverseDecoding(Node* node, bitVector& path, uint32_t& i) const {
 	// this function traverses the tree using a path as instructions to decode a symbol.
 	// Every time it reads zero it takes a left branch, one - a right branch.

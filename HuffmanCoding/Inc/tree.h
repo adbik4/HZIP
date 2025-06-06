@@ -22,6 +22,7 @@ private:
 	};
 
 	// methods
+	void deletePostOrder(struct Node* node);
 	void traverseEncoding(Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info);
 	char traverseDecoding(Node* node, bitVector& path, uint32_t& i) const;
 	void traverseFlattening(Node* node, bitVector& mask, std::vector<char>& data) const;
@@ -35,4 +36,8 @@ public:
 	void encodeTable(std::unordered_map<char, Symbol>& map);
 	char decodeChar(bitVector& path, uint32_t& start_idx) const;
 	std::pair<bitVector, std::vector<char>> flatten() const;
+
+	~HuffmanTree() {
+		deletePostOrder(rootNode);Add commentMore actions
+	}
 };

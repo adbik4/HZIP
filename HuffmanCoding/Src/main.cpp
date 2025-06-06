@@ -11,8 +11,8 @@ int main()
 	SetConsoleOutputCP(1250);
 	std::cout << std::fixed << std::setprecision(3);
 
-	// code 
-	std::shared_ptr<File> message = File::getInstance("AAAAABBBCCD");
+	// code 1
+	std::shared_ptr<File> message = File::getInstance("filepath.txt");
 	message->writeFile("test_file.huf");
 	std::cout << "DONE \n";
 

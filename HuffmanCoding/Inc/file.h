@@ -22,7 +22,7 @@ private:
 	// private constructor
 	File(std::string filepath)
 	{
-		std::tie(_format, _content) = std::pair<std::array<char, 4>, std::string>({ {'.', 't', 'x', 't'}, "AAAAABBBCCD"}); 		// TEMPORARY FOR DEBUGGING
+		std::tie(_format, _content) = std::pair<std::array<char, 4>, std::string>({ {'.', 't', 'x', 't'}, "Something reaaaaaally looooooong"}); 		// TEMPORARY FOR DEBUGGING
 		_huffMap = CalcFrequency();
 		_huffTree = std::make_unique<HuffmanTree>(_huffMap);
 		_huffTree->encodeTable(_huffMap);
