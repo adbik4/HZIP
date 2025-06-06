@@ -1,4 +1,7 @@
 #include "tree.h"
+#include <stack>
+#include <cassert>
+
 // description:
 
 // constructor definition
@@ -29,36 +32,41 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const bitVector& mask) {
 	// contructor for recreating a tree for decompression
 	// reconstruct the tree from a flattened list
+	// ---------
+	// tree_data -> list of node contents in preorder traversal order
+	// mask -> sequence of bits that encodes branch endings:
+	// 1 = node is a character,
+	// 0 = node is null
+
 	uint32_t data_idx = 1;
 	uint32_t mask_idx = 1;
-	std::queue<Node*> q;
+	std::stack<Node*> s;
 
-	rootNode = new Node(tree_data[0]);
-	q.push(rootNode); // root node
+	rootNode = new Node(Symbol(tree_data[0]));
+	s.push(rootNode); // root node
 
-	while (!q.empty()) {
-
-		Node* currNode = q.back();
+	while (!s.empty()) {
+		Node* currNode = s.top();
 		if (mask[mask_idx]) {
 			// mask 1:
 			// continue
-			Node* newNode = new Node(tree_data[data_idx]);
+			Node* newNode = new Node(Symbol(tree_data[data_idx]));
 			++data_idx;
 
 			if (currNode->left == nullptr) {
-				currNode->left = newNode;
+				currNode->left = std::move(newNode);
 			}
 			else if (currNode->right == nullptr) {
-				currNode->right = newNode;
+				currNode->right = std::move(newNode);
 			}
 			else {
-				q.pop(); // node is filled and can be removed from the queue
-				q.push(newNode);
+				s.pop(); // node is filled and can be removed from the stack
 			}
+			s.push(newNode);
 		}
 		else {
 			// mask 0:
-			q.pop(); // end branch
+			s.pop(); // end branch
 		}
 		++mask_idx;
 	}
@@ -125,15 +133,6 @@ char HuffmanTree::traverseDecoding(Node* node, bitVector& path, uint32_t& i) con
 	return decodedChar;
 }
 
-void HuffmanTree::deletePostOrder(struct Node* node) {
-	if (node == nullptr) {
-		return;
-	}
-	deletePostOrder(node->left);
-	deletePostOrder(node->right);
-	delete node;
-}
-
 std::pair<bitVector, std::vector<char>> HuffmanTree::flatten() const {
 	//using preorder traversal
 	std::vector<char> data;
@@ -146,19 +145,17 @@ std::pair<bitVector, std::vector<char>> HuffmanTree::flatten() const {
 
 void HuffmanTree::traverseFlattening(Node* node, bitVector& mask, std::vector<char>& data) const {
 	// fills in data and mask with information about the tree
-	if (node == nullptr) {
-		// don't write two 0's in a row
-		uint32_t lastIndex = mask.getLength() - 1;
-		bool lastMaskBit = mask[lastIndex];
-		if (lastMaskBit) {
-			mask.pushBit(0);
-			return;
-		} else {
-			return;
-		}
-	}
-	data.push_back(node->data.character);
+	assert(node != nullptr && "Null node encountered in full binary tree");
+
 	mask.pushBit(1);
+	data.push_back(node->data.character);
+
+	// Leaf node — encode as "1" + "0"
+	if (!node->left && !node->right) {
+		mask.pushBit(0);  // Mark as a leaf
+		return;
+	}
+
 	traverseFlattening(node->left, mask, data);
 	traverseFlattening(node->right, mask, data);
 }

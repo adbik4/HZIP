@@ -2,8 +2,15 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #define BYTE_LEN 8
+
+// DATA TYPE OVERVIEW:
+// Code -> used to efficiently store small bits of binary data (up to 32 bits)
+// bitVector -> used to store huge amounts of binary data (up to 536 MB)
+// Symbol -> holds every information about a single character
+// Node -> used to store Symbols inside of a tree
 
 class Code {
 public:
@@ -27,7 +34,7 @@ public:
 
 	Symbol(const float& frequency)
 		: character('\0'),
-		 freq(frequency),
+		freq(frequency),
 		encoding{}
 	{}
 
@@ -35,6 +42,12 @@ public:
 		: character(character),
 		 freq(frequency),
 		 encoding{}
+	{}
+
+	Symbol(const char& character)
+		: character(character),
+		freq(0.0),
+		encoding{}
 	{}
 };
 
@@ -52,8 +65,8 @@ struct Node {
 
 	Node(const Symbol& data, Node* left, Node* right)
 		: data(data),
-		  left(left),
-		  right(right)
+		left(left),
+		right(right)
 	{}
 };
 

@@ -2,6 +2,7 @@
 #include <queue>
 #include <unordered_map>
 #include <string>
+#include <memory>
 
 #include "types.h"
 
@@ -10,7 +11,7 @@ class HuffmanTree {
 private:
 	Node* rootNode;
 	struct NodeComp {
-		bool operator()(Node* self, Node* other) {
+		bool operator()(Node* self, Node* other) const {
 			return self->data.freq > other->data.freq;
 		}
 	};
@@ -21,19 +22,14 @@ private:
 	};
 
 	// methods
-	void deletePostOrder(struct Node* node);
-	void traverseEncoding(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info);
+	void traverseEncoding(Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info);
 	char traverseDecoding(Node* node, bitVector& path, uint32_t& i) const;
 	void traverseFlattening(Node* node, bitVector& mask, std::vector<char>& data) const;
 
 public:
 	// constructor / destructor
-	HuffmanTree(const std::unordered_map<char, Symbol>& probMap);	// constructs tree from scratch
-	HuffmanTree(const std::vector<char>& vec, const bitVector& mask);						// reconstructs tree based on flattened data
-
-	~HuffmanTree() {
-		deletePostOrder(rootNode);
-	}
+	HuffmanTree(const std::unordered_map<char, Symbol>& probMap);		// constructs tree from scratch
+	HuffmanTree(const std::vector<char>& vec, const bitVector& mask);	// reconstructs tree based on flattened data
 
 	// methods
 	void encodeTable(std::unordered_map<char, Symbol>& map);

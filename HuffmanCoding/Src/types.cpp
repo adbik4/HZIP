@@ -55,6 +55,11 @@ uint32_t bitVector::getLength() const {
 	return 8 * (data.size()-1) + bitIndex; 
 }
 
+bool bitVector::operator[](const uint32_t& idx) const {
+	// {{0,1,2,3,4,5,6,7}, {8,9,10,11,12,13,14,15}, ...}
+	return data.at(idx / BYTE_LEN) & (1 << (BYTE_LEN - 1 - idx % BYTE_LEN));
+}
+
 std::string bitVector::toString() const {
 	std::string result;
 	uint32_t curr_len = this->getLength();
@@ -83,7 +88,7 @@ std::string bitVector::toString() const {
 		}
 		else {
 			// last byte
-			while (substr.size() > curr_len) {
+			while (substr.size() >= curr_len) {
 				substr.pop_back();
 			}
 			result.append(substr);
@@ -121,9 +126,4 @@ std::ostream& operator<<(std::ostream& os, const Symbol& sym) {
 
 	os << token << "> freq: " << sym.freq << ", encoding: " << sym.encoding.toString();
 	return os;
-}
-
-bool bitVector::operator[](const uint32_t& idx) const{
-	// {{0,1,2,3,4,5,6,7}, {8,9,10,11,12,13,14,15}, ...}
-	return data.at(idx / BYTE_LEN) & (1 << (BYTE_LEN-1 - idx % BYTE_LEN));
 }
