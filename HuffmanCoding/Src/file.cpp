@@ -34,13 +34,12 @@ bitVector File::compress() {
 	return compressed_data;
 }
 
-std::string File::decompress(const bitVector& vector) {
-	bitVector tmpPath = vector;
+std::string File::decompress(const std::vector<char>& vector) {
 	std::string content;
 
 	uint32_t start_idx = 0;
-	while (start_idx < vector.getLength()) {
-		content.push_back(_huffTree->decodeChar(tmpPath, start_idx));
+	while (start_idx < vector.size()) {
+		content.push_back(_huffTree->decodeChar(vector, start_idx));
 	}
 	return content;
 }

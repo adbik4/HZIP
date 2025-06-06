@@ -22,10 +22,23 @@ private:
 	// private constructor
 	File(std::string filepath)
 	{
-		std::tie(_format, _content) = std::pair<std::array<char, 4>, std::string>({ {'.', 't', 'x', 't'}, "Something reaaaaaally looooooong"}); 		// TEMPORARY FOR DEBUGGING
-		_huffMap = CalcFrequency();
-		_huffTree = std::make_unique<HuffmanTree>(_huffMap);
-		_huffTree->encodeTable(_huffMap);
+		std::string extension;
+		if (extension == ".huf") {
+			// decompression
+			std::tie(_format, _content, _huffTree) = readHuffFile();
+			// later add a function to write back the original file data
+		}
+		else {
+			// compression
+			std::tie(_format, _content) = readSourceFile();
+			_huffMap = CalcFrequency();
+			_huffTree = std::make_unique<HuffmanTree>(_huffMap);
+			_huffTree->encodeTable(_huffMap);
+		}
+		//std::tie(_format, _content) = std::pair<std::array<char, 4>, std::string>({ {'.', 't', 'x', 't'}, "Something reaaaaaally looooooong"}); // TEMPORARY FOR DEBUGGING
+		//_huffMap = CalcFrequency();
+		//_huffTree = std::make_unique<HuffmanTree>(_huffMap);
+		//_huffTree->encodeTable(_huffMap);
 	}
 
 	//File(std::string filepath)
@@ -51,9 +64,9 @@ public:
 
 	// methods
 	static bitVector compress();
-	static std::string decompress(const bitVector& vector);
+	static std::string decompress(const std::vector<char>& vector);
 
-	static std::tuple<std::array<char, 4>, std::string, std::unique_ptr<HuffmanTree>>  readHuffFile(const std::string& filepath);
+	static std::tuple<std::array<char, 4>, std::vector<char>, std::unique_ptr<HuffmanTree>>  readHuffFile(const std::string& filepath);
 	static void writeFile(const std::string& filepath);
 
 

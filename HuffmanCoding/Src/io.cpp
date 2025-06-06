@@ -1,17 +1,8 @@
 #include "file.h"
+#include "general.h"
+
 // description:
 // This file contains all of the basic functions for reading and writing .huf files
-
-uint32_t toLittleEndian(uint32_t value) {
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	return value;  // Already little endian
-#else
-	return ((value & 0x000000FF) << 24) |
-		((value & 0x0000FF00) << 8) |
-		((value & 0x00FF0000) >> 8) |
-		((value & 0xFF000000) >> 24);
-#endif
-}
 
 void writeTree(std::ofstream& file, std::unique_ptr<HuffmanTree> _huffTree) {
 	bitVector mask;
@@ -29,11 +20,11 @@ void writeTree(std::ofstream& file, std::unique_ptr<HuffmanTree> _huffTree) {
 	file.write(tree_data.data(), tree_data.size()); // write tree_data
 }
 
-std::tuple<std::array<char, 4>, std::string, std::unique_ptr<HuffmanTree>>
+std::tuple<std::array<char, 4>, std::vector<char>, std::unique_ptr<HuffmanTree>>
 File::readHuffFile(const std::string& filepath) {
 	std::array<char, 4> format;
 	std::vector<char> buffer;
-	std::string content;
+	std::vector<char> content;
 	uint32_t value;
 
 	std::ifstream file(filepath, std::ios::binary);
@@ -55,16 +46,27 @@ File::readHuffFile(const std::string& filepath) {
 	}
 
 	// unpack tree
+	std::vector<char> mask;
+	std::vector<char> tree_data;
+
+	file.read(buffer.data(), 4);  // mask size in bytes
+	std::memcpy(&value, buffer.data(), 4);
+	buffer.resize(value);
+
+	file.read(buffer.data(), value); // read mask
+	mask = buffer;
+
 	file.read(buffer.data(), 4);  // tree size in bytes
 	std::memcpy(&value, buffer.data(), 4);
-
 	buffer.resize(value);
+
 	file.read(buffer.data(), value); // read tree
+	tree_data = buffer;
 
-	std::unique_ptr<HuffmanTree> tree;
+	// recreate the tree structure
+	std::unique_ptr<HuffmanTree> tree = std::make_unique<HuffmanTree>(tree_data, mask);
 
-	// decompress content
-	// read until the end of file, storing everything in a bitVector
+	// read until the end of file, storing everything in a vector
 	// decompress
 
 	//content = 

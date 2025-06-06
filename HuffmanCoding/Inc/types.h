@@ -4,8 +4,6 @@
 #include <vector>
 #include <memory>
 
-#define BYTE_LEN 8
-
 // DATA TYPE OVERVIEW:
 // Code -> used to efficiently store small bits of binary data (up to 32 bits)
 // bitVector -> used to store huge amounts of binary data (up to 536 MB)

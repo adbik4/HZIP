@@ -1,4 +1,5 @@
 #include "tree.h"
+#include "general.h"
 #include <stack>
 #include <cassert>
 
@@ -29,7 +30,7 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 	rootNode = probQueue.top();
 }
 
-HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const bitVector& mask) {
+HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const std::vector<char>& mask) {
 	// contructor for recreating a tree for decompression
 	// reconstruct the tree from a flattened list
 	// ---------
@@ -47,7 +48,7 @@ HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const bitVector& ma
 
 	while (!s.empty()) {
 		Node* currNode = s.top();
-		if (mask[mask_idx]) {
+		if (getBitAt(mask, mask_idx)) {
 			// mask 1:
 			// continue
 			Node* newNode = new Node(Symbol(tree_data[data_idx]));
@@ -106,7 +107,7 @@ void HuffmanTree::traverseEncoding(struct Node* node, std::unordered_map<char, S
 	info.encoding >>= 1;
 }
 
-char HuffmanTree::decodeChar(bitVector& path, uint32_t& start_idx) const {
+char HuffmanTree::decodeChar(const std::vector<char>& path, uint32_t& start_idx) const {
 	// public method for accessing traverseDecoding() and rootNode
 	char decoded_char = traverseDecoding(rootNode, path, start_idx);
 	return decoded_char;
@@ -121,7 +122,7 @@ void HuffmanTree::deletePostOrder(struct Node* node) {
 	delete node;
 }
 
-char HuffmanTree::traverseDecoding(Node* node, bitVector& path, uint32_t& i) const {
+char HuffmanTree::traverseDecoding(Node* node, const std::vector<char>& path, uint32_t& i) const {
 	// this function traverses the tree using a path as instructions to decode a symbol.
 	// Every time it reads zero it takes a left branch, one - a right branch.
 	// When it reaches a leaf it returns the decoded character
@@ -131,7 +132,7 @@ char HuffmanTree::traverseDecoding(Node* node, bitVector& path, uint32_t& i) con
 	}
 
 	char decodedChar = '\0';
-	if (path[i]) {
+	if (getBitAt(path, i)) {
 		++i;
 		decodedChar = traverseDecoding(node->right, path, i);
 	}
