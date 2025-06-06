@@ -44,7 +44,7 @@ public:
 
 	static std::shared_ptr<File> getInstance(std::string str) {
 		if (!instance) {
-			instance = std::make_shared<File>(str);
+			instance = std::shared_ptr<File>(new File(str));
 		}
 		return instance;
 	}

@@ -14,6 +14,7 @@ int main()
 	// code 
 	std::shared_ptr<File> message = File::getInstance("AAAAABBBCCD");
 	message->writeFile("test_file.huf");
+	std::cout << "DONE \n";
 
 	//	 WHAT THE CODE SHOULD LOOK LIKE
 	//	 decompress:
