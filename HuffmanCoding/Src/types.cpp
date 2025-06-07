@@ -31,16 +31,16 @@ bitVector::bitVector(const std::vector<char> vec) {
 }
 
 void bitVector::pushBit(bool bit) {
-	if (_data.size() == 0 && bitIndex == 0) {
+	if (_data.size() == 0 && _bitIndex == 0) {
 		_data.push_back(0);
 	}
 	if (bit) {
-		_data.back() |= (1 << (7 - bitIndex));
+		_data.back() |= (1 << (7 - _bitIndex));
 	}
 
-	++bitIndex;
-	if (bitIndex == 8) {
-		bitIndex = 0;
+	++_bitIndex;
+	if (_bitIndex == 8) {
+		_bitIndex = 0;
 		_data.push_back(0);
 	}
 }
@@ -57,7 +57,7 @@ bool bitVector::empty() {
 
 uint32_t bitVector::getLength() const {
 	// length of the data in bits
-	return 8 * (_data.size()-1) + bitIndex; 
+	return 8 * (_data.size()-1) + _bitIndex; 
 }
 
 bool bitVector::operator[](const uint32_t& idx) const {
@@ -110,7 +110,6 @@ std::ostream& operator<<(std::ostream& os, const bitVector& bitv) {
 std::ostream& operator<<(std::ostream& os, const Symbol& sym) {
 	std::string token = std::string(1, sym.character);
 
-	const size_t MAX_TOKEN_LEN = 8;  // to accomodate for the special symbol representations
 	if (sym.character == ' ') {
 		token = "[space]";
 	}

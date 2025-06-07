@@ -1,4 +1,5 @@
 #include "tree.h"
+#include "file.h"
 #include "general.h"
 #include <stack>
 #include <cassert>
@@ -6,15 +7,21 @@
 // description:
 
 // constructor definition
-HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
+HuffmanTree::HuffmanTree() {
 	// contructor for creating a tree for compression
 	// THIS IS THE MAIN HUFFMAN CODE LOGIC
 
+	// calculate the frequencies of each character
+	std::unordered_map<char, Symbol> probMap = File::CalcFrequency();
+
+	// generate a queue of Symbol nodes sorted by probability 
 	std::priority_queue<Node*, std::vector<Node*>, NodeComp> probQueue;
 	for (const auto& [character, value] : probMap) {
 		probQueue.push(new Node(value));
 	}
 
+	// while there are still nodes in the queue, merge them into branches based on their probability.
+	// the most common Symbols end up closer to the root node which in turn gives them shorter encodings
 	while (probQueue.size() > 1) {
 		Node* n1 = probQueue.top();
 		probQueue.pop();
@@ -27,10 +34,11 @@ HuffmanTree::HuffmanTree(const std::unordered_map<char, Symbol>& probMap) {
 		probQueue.push(interNode);
 	}
 
+	// now the root node is a handle to the entire tree
 	rootNode = probQueue.top();
 }
 
-HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const std::vector<char>& mask) {
+HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const bitVector& mask) {
 	// contructor for recreating a tree for decompression
 	// reconstruct the tree from a flattened list
 	// ---------
@@ -48,28 +56,32 @@ HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const std::vector<c
 
 	while (!s.empty()) {
 		Node* currNode = s.top();
-		if (getBitAt(mask, mask_idx)) {
+		if (mask[mask_idx]) {
 			// mask 1:
 			// continue
 			Node* newNode = new Node(Symbol(tree_data[data_idx]));
-			++data_idx;
 
 			if (currNode->left == nullptr) {
 				currNode->left = std::move(newNode);
+				s.push(newNode);
+				++data_idx;
+				++mask_idx;
 			}
 			else if (currNode->right == nullptr) {
 				currNode->right = std::move(newNode);
+				s.push(newNode);
+				++data_idx;
+				++mask_idx;
 			}
 			else {
 				s.pop(); // node is filled and can be removed from the stack
 			}
-			s.push(newNode);
 		}
 		else {
 			// mask 0:
 			s.pop(); // end branch
+			++mask_idx;
 		}
-		++mask_idx;
 	}
 }
 
@@ -107,7 +119,7 @@ void HuffmanTree::traverseEncoding(struct Node* node, std::unordered_map<char, S
 	info.encoding >>= 1;
 }
 
-char HuffmanTree::decodeChar(const std::vector<char>& path, uint32_t& start_idx) const {
+char HuffmanTree::decodeChar(const bitVector& path, uint32_t& start_idx) const {
 	// public method for accessing traverseDecoding() and rootNode
 	char decoded_char = traverseDecoding(rootNode, path, start_idx);
 	return decoded_char;
@@ -122,7 +134,7 @@ void HuffmanTree::deletePostOrder(struct Node* node) {
 	delete node;
 }
 
-char HuffmanTree::traverseDecoding(Node* node, const std::vector<char>& path, uint32_t& i) const {
+char HuffmanTree::traverseDecoding(Node* node, const bitVector& path, uint32_t& i) const {
 	// this function traverses the tree using a path as instructions to decode a symbol.
 	// Every time it reads zero it takes a left branch, one - a right branch.
 	// When it reaches a leaf it returns the decoded character
@@ -132,7 +144,7 @@ char HuffmanTree::traverseDecoding(Node* node, const std::vector<char>& path, ui
 	}
 
 	char decodedChar = '\0';
-	if (getBitAt(path, i)) {
+	if (path[i]) {
 		++i;
 		decodedChar = traverseDecoding(node->right, path, i);
 	}
@@ -143,14 +155,14 @@ char HuffmanTree::traverseDecoding(Node* node, const std::vector<char>& path, ui
 	return decodedChar;
 }
 
-std::pair<std::vector<char>, std::vector<char>> HuffmanTree::flatten() const {
+std::pair<bitVector, std::vector<char>> HuffmanTree::flatten() const {
 	//using preorder traversal
 	std::vector<char> data;
 	bitVector mask;
 
 	traverseFlattening(rootNode, mask, data);
 
-	return { mask._data, data};
+	return { mask, data};
 }
 
 void HuffmanTree::traverseFlattening(Node* node, bitVector& mask, std::vector<char>& data) const {

@@ -22,7 +22,6 @@ private:
 	File(std::string filepath);
 
 	// private methods
-	std::unordered_map<char, Symbol> CalcFrequency();
 
 public:
 	// public constructors
@@ -37,15 +36,16 @@ public:
 	}
 
 	// methods
+	static std::unordered_map<char, Symbol> CalcFrequency();
 	static bitVector compress();
-	static std::string decompress(const std::vector<char>& vector);
+	static std::vector<char> decompress(const bitVector& enc_data, std::shared_ptr<HuffmanTree> huffTree);
 
 	static std::tuple<std::array<char, 4>, std::vector<char>, std::shared_ptr<HuffmanTree>>  readHuffFile(const std::string& filepath);
 	static void writeFile(const std::string& filepath);
 
 
 	// getters
-	std::string getContent() const { return std::string(_content.begin(), _content.end()); }
+	std::string getContents() const { return std::string(_content.begin(), _content.end()); }
 	std::unordered_map<char, Symbol> getMapping() const { return _huffMap; }
 	std::shared_ptr<HuffmanTree> getTree() const { return _huffTree; }
 };

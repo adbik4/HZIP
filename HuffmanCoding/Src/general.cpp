@@ -11,7 +11,3 @@ uint32_t toLittleEndian(uint32_t value) {
 		((value & 0xFF000000) >> 24);
 #endif
 }
-
-bool getBitAt(const std::vector<char>& vec, const uint32_t& idx) {
-	return vec.at(idx / BYTE_LEN) & (1 << (BYTE_LEN - 1 - idx % BYTE_LEN));
-}

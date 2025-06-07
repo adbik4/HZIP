@@ -11,7 +11,7 @@ std::shared_ptr<HuffmanTree> File::_huffTree = nullptr;
 
 File::File(std::string filepath)
 {
-	// cut out the last 4 characters (the file extension)
+	// isolate the last 4 characters (the file extension)
 	std::array<char, 4> extension;
 	std::string_view view = std::string_view(filepath).substr(filepath.size() - 4);
 	std::copy_n(view.begin(), 4, extension.begin());
@@ -23,13 +23,19 @@ File::File(std::string filepath)
 	}
 	else {
 		// compression
+		// source the data
 		//std::tie(_format, _content) = readSourceFile();
 		_format = std::array<char, 4>({ '.', 't', 'x', 't' });
-		std::string text = "AAAAABBBCCD";
+		std::string text = "lorem ipsum dolor sit amet, consectetur adipiscing elit";
 		_content = std::vector<char>(text.begin(), text.end());
-		_huffMap = CalcFrequency();
-		_huffTree = std::make_shared<HuffmanTree>(_huffMap);
+
+		// generate the huffman tree
+		_huffTree = std::make_shared<HuffmanTree>();
+
+		// encode characters
 		_huffTree->encodeTable(_huffMap);
+
+		// write a .huf file
 		writeFile("test_file.huf");
 	}
 }
@@ -60,12 +66,16 @@ bitVector File::compress() {
 	return compressed_data;
 }
 
-std::string File::decompress(const std::vector<char>& vector) {
-	std::string content;
+std::vector<char> File::decompress(const bitVector& enc_data, std::shared_ptr<HuffmanTree> huffTree) {
+	if (!huffTree) {
+		std::cout << "Huffman tree not initialized\n";
+		throw std::runtime_error("Huffman tree not initialized");
+	}
 
+	std::vector<char> content;
 	uint32_t start_idx = 0;
-	while (start_idx < vector.size()) {
-		content.push_back(_huffTree->decodeChar(vector, start_idx));
+	while (start_idx < enc_data.getLength()) {
+		content.push_back(huffTree->decodeChar(enc_data, start_idx));
 	}
 	return content;
 }

@@ -69,11 +69,9 @@ struct Node {
 };
 
 class bitVector {
-private:
-	uint8_t bitIndex = 0; // current position in the current byte (0..7)
-
 public:
 	std::vector<char> _data;
+	uint8_t _bitIndex = 0; // current position in the current byte (0..7)
 
 	// methods
 	bitVector() = default;
@@ -81,8 +79,11 @@ public:
 	void pushBit(bool bit);
 	void pushBits(uint32_t bits, uint8_t count);
 	bool empty();
-	uint32_t getLength() const;
 	std::string toString() const;
+
+	// getters / setters
+	uint32_t getLength() const;
+
 
 	//overloads
 	bool operator[](const uint32_t& idx) const;

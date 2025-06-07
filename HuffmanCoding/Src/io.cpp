@@ -24,14 +24,14 @@ std::vector<char> readCharSequence(std::ifstream& file) {
 }
 
 void writeTree(std::ofstream& file, std::shared_ptr<HuffmanTree> _huffTree) {
-	std::vector<char> mask;
+	bitVector mask;
 	std::vector<char> tree_data;
 	std::tie(mask, tree_data) = _huffTree->flatten();
 	
 	// store information about the nodes
-	uint32_t mask_length = toLittleEndian(mask.size()); // length of the data block
+	uint32_t mask_length = toLittleEndian(mask._data.size()); // length of the data block
 	file.write(reinterpret_cast<const char*>(&mask_length), 4);
-	file.write(reinterpret_cast<const char*>(mask.data()), mask.size()); // write mask
+	file.write(reinterpret_cast<const char*>(mask._data.data()), mask._data.size()); // write mask
 
 	// store the actual data
 	uint32_t tree_length = toLittleEndian(tree_data.size()); // length of the data block
@@ -41,8 +41,6 @@ void writeTree(std::ofstream& file, std::shared_ptr<HuffmanTree> _huffTree) {
 
 std::tuple<std::array<char, 4>, std::vector<char>, std::shared_ptr<HuffmanTree>>
 File::readHuffFile(const std::string& filepath) {
-	std::vector<char> content;
-
 	std::ifstream file(filepath, std::ios::binary);
 	if (!file.is_open()) {
 		std::cout << "ERROR: wrong file path\n";
@@ -50,8 +48,8 @@ File::readHuffFile(const std::string& filepath) {
 	}
 
 	// validate
-	std::array<char, 4> format;
 	uint32_t signature;
+	std::array<char, 4> format;
 	signature = readDWORD(file); //read signature
 	file.read(format.data(), 4); // read format
 
@@ -62,16 +60,28 @@ File::readHuffFile(const std::string& filepath) {
 
 	// unpack tree and recreate the tree structure
 	std::vector<char> mask = readCharSequence(file);
-	std::reverse(mask.begin(), mask.end()); // swap endianness
 	std::vector<char> tree_data = readCharSequence(file);
 	std::shared_ptr<HuffmanTree> tree = std::make_shared<HuffmanTree>(tree_data, mask);
+	
+	// overhead bit count
+	char overhead;
+	file.read(&overhead, 1);
 
-	// read until the end of file, storing everything in a vector
-	// decompress
+	// read until the end of file, storing everything in a vector along the way
+	std::vector<char> raw_data;
+	std::array<char, CHUNK_SIZE> buffer;
 
-	content = { '<', 'e', 'm', 'p', 't', 'y', '>' };
+	while (file) {
+		file.read(buffer.data(), buffer.size());
+		std::streamsize bytesRead = file.gcount();
+		raw_data.insert(raw_data.end(), buffer.begin(), buffer.begin() + bytesRead);
+	}
+
 	file.close();
-	return { format, content, tree };
+
+	bitVector bit_data = raw_data;
+	bit_data._bitIndex = overhead;
+	return { format, File::decompress(bit_data, tree), tree };
 }
 
 void File::writeFile(const std::string& filepath) {
@@ -88,7 +98,11 @@ void File::writeFile(const std::string& filepath) {
 	writeTree(file, _huffTree);
 
 	// file contents -----
-	std::vector<char> data = compress()._data;
-	file.write(reinterpret_cast<const char*>(data.data()), data.size());
+	const bitVector compressed_data = compress();
+	char overhead = static_cast<const char>(compressed_data._bitIndex);
+
+	file.write(&overhead, 1); // the amount of overhead bits
+	file.write(reinterpret_cast<const char*>(compressed_data._data.data()), compressed_data._data.size()); // actual data
+	
 	file.close();
 }

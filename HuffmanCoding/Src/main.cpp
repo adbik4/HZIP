@@ -12,14 +12,29 @@ int main()
 	std::cout << std::fixed << std::setprecision(3);
 
 	// code
-	std::shared_ptr<File> message = File::getInstance("test_file.huf");
-	std::shared_ptr<HuffmanTree> tree = message->getTree();
-	std::cout << "file contents: " << message->getMapping() << "\n";
+	std::shared_ptr<File> file = File::getInstance("test_file.huf");
+	std::cout << "file contents: " << file->getContents() << "\n";
+
+	//bitVector mask;
+	//std::vector<char> data;
+	//std::tie(mask, data) = file->getTree()->flatten();
+	//std::cout << "mask: " << mask << '\n';
+	//for (char c : data) {
+	//	if (c == '\0') {
+	//		std::cout << "[null]\n";
+	//	}
+	//	else if (c == ' ') {
+	//		std::cout << "[space]\n";
+	//	}
+	//	else {
+	//		std::cout << c << '\n';
+	//	}
+	//}
 
 	//	 WHAT THE CODE SHOULD LOOK LIKE
 	//	 decompress:
 	//	File file = openFile("filepath.txt"); // automatically decompresses, reads tables and trees, fills in its properties
-	//	std::cout << file.getContent();
+	//	std::cout << file.getContents();
 
 	//	 compress:
 	//	std::string content = "ABBCCC";
