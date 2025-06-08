@@ -29,6 +29,9 @@ File::File(std::string filepath)
 		std::string text = "lorem ipsum dolor sit amet, consectetur adipiscing elit";
 		_content = std::vector<char>(text.begin(), text.end());
 
+		// perform stochastic analysis of the message
+		_huffMap = CalcFrequency();
+
 		// generate the huffman tree
 		_huffTree = std::make_shared<HuffmanTree>();
 
@@ -78,13 +81,4 @@ std::vector<char> File::decompress(const bitVector& enc_data, std::shared_ptr<Hu
 		content.push_back(huffTree->decodeChar(enc_data, start_idx));
 	}
 	return content;
-}
-
-// overloads
-std::ostream& operator<<(std::ostream& os, const std::unordered_map<char, Symbol>& map) {
-	std::cout << "symbol count: " << map.size() << "\n\n";
-	for (const auto& [key, value] : map) {
-		std::cout << value << "\n";
-	}
-	return os;
 }

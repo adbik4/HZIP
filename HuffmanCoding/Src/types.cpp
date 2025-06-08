@@ -1,5 +1,6 @@
 #include "types.h"
 #include "general.h"
+#include <unordered_map>
 // description:
 
 // method definitions
@@ -102,6 +103,7 @@ std::string bitVector::toString() const {
 	return result;
 }
 
+// overloads
 std::ostream& operator<<(std::ostream& os, const bitVector& bitv) {
 	os << bitv.toString();
 	return os;
@@ -129,5 +131,15 @@ std::ostream& operator<<(std::ostream& os, const Symbol& sym) {
 	}
 
 	os << token << "> freq: " << sym.freq << ", encoding: " << sym.encoding.toString();
+	return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::unordered_map<char, Symbol>& map) {
+	std::cout << "symbol count: " << map.size() << "\n";
+	std::cout << "entropy of the message: " << calcEntropy(map) << "\n";
+	std::cout << "encoding efficiency: " << calcEfficiency(map)*100<< "%\n\n";
+	for (const auto& [key, value] : map) {
+		std::cout << value << "\n";
+	}
 	return os;
 }

@@ -12,8 +12,9 @@ int main()
 	std::cout << std::fixed << std::setprecision(3);
 
 	// code
-	std::shared_ptr<File> file = File::getInstance("test_file.huf");
-	std::cout << "file contents: " << file->getContents() << "\n";
+	std::shared_ptr<File> file = File::getInstance("test_file.txt");
+	std::cout << file->getContents() << "\n";
+	std::cout << file->getMapping() << '\n';
 
 	//bitVector mask;
 	//std::vector<char> data;

@@ -87,7 +87,14 @@ HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const bitVector& ma
 
 // methods definitions
 void HuffmanTree::encodeTable(std::unordered_map<char, Symbol>& map) {
-	traverseEncoding(rootNode, map, traversalInfo());
+	if (rootNode->data.character != '\0') {
+		// in the case where the tree has only one node, traversal makes no sense.
+		map[rootNode->data.character].encoding.code = 1;
+		map[rootNode->data.character].encoding.length = 1;
+	}
+	else {
+		traverseEncoding(rootNode, map, traversalInfo());
+	}
 }
 
 void HuffmanTree::traverseEncoding(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info) {
