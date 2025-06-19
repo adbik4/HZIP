@@ -49,16 +49,16 @@ void writeTree(std::ofstream& file, std::shared_ptr<HuffmanTree> _huffTree) {
 	file.write(tree_data.data(), tree_data.size()); // write tree_data
 }
 
-std::vector<char> File::readSourceFile(const std::string& filepath) {
-	std::ifstream file(filepath, std::ios::binary);
+std::vector<char> File::readSourceFile(const std::filesystem::path& filepath) {
+	std::ifstream file(filepath.filename(), std::ios::binary);
 	if (!file.is_open()) {
 		throw std::out_of_range("ERROR: wrong file path");
 	}
 	return readUntilEOF(file);
 }
 
-void File::writeTargetFile(const std::string& filepath) {
-	std::ofstream file(filepath, std::ios::trunc | std::ios::binary);
+void File::writeTargetFile(const std::filesystem::path& filepath) {
+	std::ofstream file(filepath.filename(), std::ios::trunc | std::ios::binary);
 	file.write(_content.data(), _content.size());
 
 	if (!file) {
@@ -68,18 +68,20 @@ void File::writeTargetFile(const std::string& filepath) {
 	file.close();
 }
 
-std::tuple<std::array<char, 4>, std::vector<char>, std::shared_ptr<HuffmanTree>>
-File::readHuffFile(const std::string& filepath) {
-	std::ifstream file(filepath, std::ios::binary);
+std::tuple<std::string, std::vector<char>, std::shared_ptr<HuffmanTree>>
+File::readHuffFile(const std::filesystem::path& filepath) {
+	std::ifstream file(filepath.filename(), std::ios::binary);
 	if (!file.is_open()) {
 		throw std::out_of_range("ERROR: wrong file path");
 	}
 
 	// validate
 	uint32_t signature;
-	std::array<char, 4> format;
 	signature = readDWORD(file); //read signature
-	file.read(format.data(), 4); // read format
+
+	std::array<char, 4> buffer;
+	file.read(buffer.data(), 4); // read format
+	std::string format(buffer.begin(), buffer.end()); // convert to string
 
 	if (signature != 0x46465548 || *format.begin() != '.') {
 		throw std::out_of_range("ERROR: invalid/corrupted input file format");
@@ -102,8 +104,8 @@ File::readHuffFile(const std::string& filepath) {
 	return { format, File::decompress(bit_data, tree), tree };
 }
 
-void File::writeHuffFile(const std::string& filepath) {
-	std::ofstream file(filepath, std::ios::trunc | std::ios::binary);
+void File::writeHuffFile(const std::filesystem::path& filepath) {
+	std::ofstream file(filepath.filename(), std::ios::trunc | std::ios::binary);
 
 	if (!file.good()) {
 		throw std::out_of_range("ERROR: unable to create the .huf file");
@@ -114,7 +116,8 @@ void File::writeHuffFile(const std::string& filepath) {
 	file.write(reinterpret_cast<const char*>(&signature), 4);
 
 	// format -------------
-	file.write(reinterpret_cast<const char*>(&_format), 4);
+	// ASSUMPTION: the file extension is 4 characters long
+	file.write(reinterpret_cast<const char*>(_format.data()), 4);
 
 	// pack tree ----------
 	writeTree(file, _huffTree);
