@@ -12,7 +12,7 @@ int main()
 	std::cout << std::fixed << std::setprecision(3);
 
 	// code
-	std::shared_ptr<File> file = File::getInstance("bezpiecznikV0.huf");
+	std::shared_ptr<File> file = File::getInstance("opto.huf");
 	std::cout << file->getMapping() << '\n';
 
 	//	 WHAT THE CODE SHOULD LOOK LIKE

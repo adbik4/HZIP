@@ -47,8 +47,6 @@ void writeTree(std::ofstream& file, std::shared_ptr<HuffmanTree> _huffTree) {
 	uint32_t tree_length = toLittleEndian(tree_data.size()); // length of the data block
 	file.write(reinterpret_cast<const char*>(&tree_length), 4);
 	file.write(tree_data.data(), tree_data.size()); // write tree_data
-
-	file.close();
 }
 
 std::vector<char> File::readSourceFile(const std::string& filepath) {
@@ -62,6 +60,11 @@ std::vector<char> File::readSourceFile(const std::string& filepath) {
 void File::writeTargetFile(const std::string& filepath) {
 	std::ofstream file(filepath, std::ios::trunc | std::ios::binary);
 	file.write(_content.data(), _content.size());
+
+	if (!file) {
+		throw std::exception("ERROR: target write failed");
+	}
+
 	file.close();
 }
 
@@ -87,13 +90,13 @@ File::readHuffFile(const std::string& filepath) {
 	std::vector<char> tree_data = readDataBlock(file);
 	std::shared_ptr<HuffmanTree> tree = std::make_shared<HuffmanTree>(tree_data, mask);
 	
-	// overhead bit count
-	char overhead;
-	file.read(&overhead, 1);
+	// leftover bit count
+	char leftover;
+	file.read(&leftover, 1);
 
 	// read until the end of file
 	bitVector bit_data = (bitVector) readUntilEOF(file);
-	bit_data._bitIndex = overhead;
+	bit_data._bitIndex = leftover;
 
 	file.close();
 	return { format, File::decompress(bit_data, tree), tree };
@@ -101,6 +104,10 @@ File::readHuffFile(const std::string& filepath) {
 
 void File::writeHuffFile(const std::string& filepath) {
 	std::ofstream file(filepath, std::ios::trunc | std::ios::binary);
+
+	if (!file.good()) {
+		throw std::out_of_range("ERROR: unable to create the .huf file");
+	}
 
 	// signature ----------
 	uint32_t signature = 0x46465548;
@@ -114,10 +121,13 @@ void File::writeHuffFile(const std::string& filepath) {
 
 	// file contents -----
 	const bitVector compressed_data = compress();
-	char overhead = static_cast<const char>(compressed_data._bitIndex);
+	char leftover = static_cast<const char>(compressed_data._bitIndex);
+	file.write(reinterpret_cast<const char*>(&leftover), 1);
 
-	file.write(&overhead, 1); // the amount of overhead bits
 	file.write(reinterpret_cast<const char*>(compressed_data._data.data()), compressed_data._data.size()); // actual data
-	
+	if (!file.good()) {
+		throw std::exception("ERROR: Compress write failed ");
+	}
+
 	file.close();
 }

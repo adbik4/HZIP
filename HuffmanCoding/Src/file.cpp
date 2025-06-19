@@ -30,7 +30,13 @@ File::File(std::string filepath)
 		std::string new_filepath = filepath;
 		new_filepath.resize(filepath.length() - 4);
 		new_filepath.append(std::string(_format.begin(), _format.end()));
-		writeTargetFile(new_filepath);
+		try {
+			writeTargetFile(new_filepath);
+		}
+		catch (const std::exception& e) {
+			std::cout << e.what() << '\n';
+			std::exit(-1);
+		}
 
 		std::cout << "File extracted to " << new_filepath << '\n';
 	}
@@ -58,7 +64,12 @@ File::File(std::string filepath)
 		std::string new_filepath = filepath;
 		new_filepath.resize(filepath.length() - 4);
 		new_filepath.append(".huf");
-		writeHuffFile(new_filepath);
+		try {
+			writeHuffFile(new_filepath);
+		} catch (const std::exception& e) {
+			std::cout << e.what() << '\n';
+			std::exit(-1);
+		}
 
 		std::cout << "File compressed to " << new_filepath << '\n';
 	}
