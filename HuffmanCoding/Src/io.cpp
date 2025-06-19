@@ -5,6 +5,7 @@
 // This file contains all of the basic functions for reading and writing .huf files
 
 uint32_t readDWORD(std::ifstream& file) {
+	// read a 32bit value
 	std::array<char, 4> buffer;
 	uint32_t value;
 	file.read(buffer.data(), 4);
@@ -12,15 +13,24 @@ uint32_t readDWORD(std::ifstream& file) {
 	return value;
 }
 
-std::vector<char> readCharSequence(std::ifstream& file) {
-	uint32_t length;
-	std::vector<char> length_data(4);
-	file.read(length_data.data(), 4);  // mask size in bytes
-	std::memcpy(&length, length_data.data(), 4);
-
-	std::vector<char> result(length);
-	file.read(result.data(), length); // read actual data
+std::vector<char> readDataBlock(std::ifstream& file) {
+	// reads a single data block
+	uint32_t length = readDWORD(file); // data block length
+	std::vector<char> result(length); // allocate buffer
+	file.read(result.data(), length); // read data
 	return result;
+}
+
+std::vector<char> readUntilEOF(std::ifstream& file) {
+	std::vector<char> raw_data;
+	std::array<char, CHUNK_SIZE> buffer;
+
+	while (file) {
+		file.read(buffer.data(), buffer.size());
+		std::streamsize bytesRead = file.gcount();
+		raw_data.insert(raw_data.end(), buffer.begin(), buffer.begin() + bytesRead);
+	}
+	return raw_data;
 }
 
 void writeTree(std::ofstream& file, std::shared_ptr<HuffmanTree> _huffTree) {
@@ -37,14 +47,29 @@ void writeTree(std::ofstream& file, std::shared_ptr<HuffmanTree> _huffTree) {
 	uint32_t tree_length = toLittleEndian(tree_data.size()); // length of the data block
 	file.write(reinterpret_cast<const char*>(&tree_length), 4);
 	file.write(tree_data.data(), tree_data.size()); // write tree_data
+
+	file.close();
+}
+
+std::vector<char> File::readSourceFile(const std::string& filepath) {
+	std::ifstream file(filepath, std::ios::binary);
+	if (!file.is_open()) {
+		throw std::out_of_range("ERROR: wrong file path");
+	}
+	return readUntilEOF(file);
+}
+
+void File::writeTargetFile(const std::string& filepath) {
+	std::ofstream file(filepath, std::ios::trunc | std::ios::binary);
+	file.write(_content.data(), _content.size());
+	file.close();
 }
 
 std::tuple<std::array<char, 4>, std::vector<char>, std::shared_ptr<HuffmanTree>>
 File::readHuffFile(const std::string& filepath) {
 	std::ifstream file(filepath, std::ios::binary);
 	if (!file.is_open()) {
-		std::cout << "ERROR: wrong file path\n";
-		throw std::out_of_range("ERROR: wrong file path\n");
+		throw std::out_of_range("ERROR: wrong file path");
 	}
 
 	// validate
@@ -54,37 +79,27 @@ File::readHuffFile(const std::string& filepath) {
 	file.read(format.data(), 4); // read format
 
 	if (signature != 0x46465548 || *format.begin() != '.') {
-		std::cout << "ERROR: invalid/corrupted input file format\n";
-		throw std::out_of_range("ERROR: invalid/corrupted input file format\n");
+		throw std::out_of_range("ERROR: invalid/corrupted input file format");
 	}
 
 	// unpack tree and recreate the tree structure
-	std::vector<char> mask = readCharSequence(file);
-	std::vector<char> tree_data = readCharSequence(file);
+	std::vector<char> mask = readDataBlock(file);
+	std::vector<char> tree_data = readDataBlock(file);
 	std::shared_ptr<HuffmanTree> tree = std::make_shared<HuffmanTree>(tree_data, mask);
 	
 	// overhead bit count
 	char overhead;
 	file.read(&overhead, 1);
 
-	// read until the end of file, storing everything in a vector along the way
-	std::vector<char> raw_data;
-	std::array<char, CHUNK_SIZE> buffer;
-
-	while (file) {
-		file.read(buffer.data(), buffer.size());
-		std::streamsize bytesRead = file.gcount();
-		raw_data.insert(raw_data.end(), buffer.begin(), buffer.begin() + bytesRead);
-	}
+	// read until the end of file
+	bitVector bit_data = (bitVector) readUntilEOF(file);
+	bit_data._bitIndex = overhead;
 
 	file.close();
-
-	bitVector bit_data = raw_data;
-	bit_data._bitIndex = overhead;
 	return { format, File::decompress(bit_data, tree), tree };
 }
 
-void File::writeFile(const std::string& filepath) {
+void File::writeHuffFile(const std::string& filepath) {
 	std::ofstream file(filepath, std::ios::trunc | std::ios::binary);
 
 	// signature ----------

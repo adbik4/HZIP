@@ -40,12 +40,14 @@ public:
 	static bitVector compress();
 	static std::vector<char> decompress(const bitVector& enc_data, std::shared_ptr<HuffmanTree> huffTree);
 
+	static std::vector<char> readSourceFile(const std::string& filepath);
 	static std::tuple<std::array<char, 4>, std::vector<char>, std::shared_ptr<HuffmanTree>>  readHuffFile(const std::string& filepath);
-	static void writeFile(const std::string& filepath);
+	static void writeHuffFile(const std::string& filepath);
+	static void writeTargetFile(const std::string& filepath);
 
 
 	// getters
-	std::string getContents() const { return std::string(_content.begin(), _content.end()); }
+	std::vector<char> getContents() const { return _content; }
 	std::unordered_map<char, Symbol> getMapping() const { return _huffMap; }
 	std::shared_ptr<HuffmanTree> getTree() const { return _huffTree; }
 };
