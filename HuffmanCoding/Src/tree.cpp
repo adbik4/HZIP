@@ -47,41 +47,26 @@ HuffmanTree::HuffmanTree(const std::vector<char>& tree_data, const bitVector& ma
 	// 1 = node is a character,
 	// 0 = node is null
 
-	uint32_t data_idx = 1;
-	uint32_t mask_idx = 1;
-	std::stack<Node*> s;
+	buildInfo info;
+	rootNode = traverseBuild(tree_data, mask, info);
+}
 
-	rootNode = new Node(Symbol(tree_data[0]));
-	s.push(rootNode); // root node
+Node* HuffmanTree::traverseBuild(const std::vector<char>& tree_data, const bitVector& mask, buildInfo& info) {
+	if (info.last_was_null) {
+		info.mask_idx--;
+	}
 
-	while (!s.empty()) {
-		Node* currNode = s.top();
-		if (mask[mask_idx]) {
-			// mask 1:
-			// continue
-			Node* newNode = new Node(Symbol(tree_data[data_idx]));
-
-			if (currNode->left == nullptr) {
-				currNode->left = std::move(newNode);
-				s.push(newNode);
-				++data_idx;
-				++mask_idx;
-			}
-			else if (currNode->right == nullptr) {
-				currNode->right = std::move(newNode);
-				s.push(newNode);
-				++data_idx;
-				++mask_idx;
-			}
-			else {
-				s.pop(); // node is filled and can be removed from the stack
-			}
-		}
-		else {
-			// mask 0:
-			s.pop(); // end branch
-			++mask_idx;
-		}
+	if (mask[info.mask_idx++] == 1 && info.data_idx < tree_data.size()) {
+		// Internal node
+		Node* node = new Node(Symbol(tree_data[info.data_idx++]));
+		node->left = traverseBuild(tree_data, mask, info);
+		node->right = traverseBuild(tree_data, mask, info);
+		return node;
+	}
+	else {
+		// null nodes
+		info.last_was_null ^= true; // toggle
+		return nullptr;
 	}
 }
 
@@ -93,11 +78,11 @@ void HuffmanTree::encodeTable(std::unordered_map<char, Symbol>& map) {
 		map[rootNode->data.character].encoding.length = 1;
 	}
 	else {
-		traverseEncoding(rootNode, map, traversalInfo());
+		traverseEncoding(rootNode, map, encodingInfo());
 	}
 }
 
-void HuffmanTree::traverseEncoding(struct Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info) {
+void HuffmanTree::traverseEncoding(struct Node* node, std::unordered_map<char, Symbol>& map, encodingInfo info) {
 	// this function traverses the tree.
 	// Every time it takes the left branch it concatenates 0, a right branch it concatenates 1.
 	// When it reaches a leaf it saves the encoding at the corresponding entry in the table

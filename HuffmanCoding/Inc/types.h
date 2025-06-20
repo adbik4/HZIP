@@ -20,7 +20,7 @@ public:
 
 class Symbol {
 public:
-	char character;
+	unsigned char character;
 	float freq;
 	Code encoding;
 

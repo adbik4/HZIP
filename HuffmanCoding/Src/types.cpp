@@ -58,7 +58,7 @@ bool bitVector::empty() {
 
 uint32_t bitVector::getLength() const {
 	// length of the data in bits
-	return 8 * (_data.size()-1) + _bitIndex; 
+	return 8 * ((uint32_t) _data.size()-1) + _bitIndex;
 }
 
 bool bitVector::operator[](const uint32_t& idx) const {

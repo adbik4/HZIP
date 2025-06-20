@@ -16,14 +16,21 @@ private:
 		}
 	};
 	
-	struct traversalInfo {
+	struct encodingInfo {
 		uint32_t encoding = 0;
 		uint8_t length = 0;
 	};
 
+	struct buildInfo {
+		uint32_t mask_idx = 0;
+		uint32_t data_idx = 0;
+		bool last_was_null = false;
+	};
+
 	// methods
 	void deletePostOrder(struct Node* node);
-	void traverseEncoding(Node* node, std::unordered_map<char, Symbol>& map, traversalInfo info);
+	Node* traverseBuild(const std::vector<char>& tree_data, const bitVector& mask, buildInfo& info);
+	void traverseEncoding(Node* node, std::unordered_map<char, Symbol>& map, encodingInfo info);
 	char traverseDecoding(Node* node, const bitVector& path, uint32_t& i) const;
 	void traverseFlattening(Node* node, bitVector& mask, std::vector<char>& data) const;
 
