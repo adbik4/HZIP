@@ -4,6 +4,8 @@
 // description:
 // This file contains all of the basic functions for reading and writing .huf files
 
+// --- Helper functions ----------
+
 uint32_t readDWORD(std::ifstream& file) {
 	// read a 32bit value
 	std::array<char, 4> buffer;
@@ -49,6 +51,8 @@ void writeTree(std::ofstream& file, std::shared_ptr<HuffmanTree> _huffTree) {
 	file.write(tree_data.data(), tree_data.size()); // write tree_data
 }
 
+// --- Main IO logic -----------
+
 std::vector<char> File::readSourceFile(const std::filesystem::path& filepath) {
 	std::ifstream file(filepath.filename(), std::ios::binary);
 	if (!file.is_open()) {
@@ -79,9 +83,15 @@ File::readHuffFile(const std::filesystem::path& filepath) {
 	uint32_t signature;
 	signature = readDWORD(file); //read signature
 
+	// read format
 	std::array<char, 4> buffer;
-	file.read(buffer.data(), 4); // read format
-	std::string format(buffer.begin(), buffer.end()); // convert to string
+	file.read(buffer.data(), 4);
+	std::string format = ".";
+	for (char c : buffer) {
+		if (c != '\0') {
+			format.insert(format.end(), c);
+		}
+	}
 
 	if (signature != 0x46465548 || *format.begin() != '.') {
 		throw std::out_of_range("ERROR: invalid/corrupted input file format");
@@ -116,7 +126,10 @@ void File::writeHuffFile(const std::filesystem::path& filepath) {
 	file.write(reinterpret_cast<const char*>(&signature), 4);
 
 	// format -------------
-	// ASSUMPTION: the file extension is 4 characters long
+	_format.erase(_format.begin()); // remove the dot
+	while (_format.length() < 4) {
+		_format.insert(_format.end(), '\0'); // padding
+	}
 	file.write(reinterpret_cast<const char*>(_format.data()), 4);
 
 	// pack tree ----------

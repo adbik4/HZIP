@@ -59,12 +59,14 @@ File::File(const std::filesystem::path& filepath)
 			std::exit(-1);
 		}
 
+		// PRINT SUMMARY
 		std::cout << "File compressed to " << filepath.stem().string().append(".huf") << '\n';
+		std::cout << this->getMapping() << '\n';
 	}
 }
 
 std::unordered_map<char, Symbol> File::CalcFrequency() {
-	const double N = static_cast<double>(_content.size());
+	const float N = static_cast<float>(_content.size());
 	std::unordered_map<char, Symbol> map;
 
 	for (char x : _content) {

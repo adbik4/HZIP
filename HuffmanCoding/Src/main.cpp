@@ -12,8 +12,7 @@ int main()
 	std::cout << std::fixed << std::setprecision(3);
 
 	// code
-	std::shared_ptr<File> file = File::getInstance("hello.txt");
-	std::cout << file->getMapping() << '\n';
+	std::shared_ptr<File> file = File::getInstance("opto.huf");
 
 	//	 WHAT THE CODE SHOULD LOOK LIKE
 	//	 decompress:
