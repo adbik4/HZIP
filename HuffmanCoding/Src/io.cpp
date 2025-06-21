@@ -54,15 +54,15 @@ void writeTree(std::ofstream& file, std::shared_ptr<HuffmanTree> _huffTree) {
 // --- Main IO logic -----------
 
 std::vector<char> File::readSourceFile(const std::filesystem::path& filepath) {
-	std::ifstream file(filepath.filename(), std::ios::binary);
+	std::ifstream file(filepath, std::ios::binary);
 	if (!file.is_open()) {
-		throw std::out_of_range("ERROR: wrong file path");
+		throw std::out_of_range("ERROR: incorrect file path");
 	}
 	return readUntilEOF(file);
 }
 
 void File::writeTargetFile(const std::filesystem::path& filepath) {
-	std::ofstream file(filepath.filename(), std::ios::trunc | std::ios::binary);
+	std::ofstream file(filepath, std::ios::trunc | std::ios::binary);
 	file.write(_content.data(), _content.size());
 
 	if (!file) {
@@ -74,7 +74,7 @@ void File::writeTargetFile(const std::filesystem::path& filepath) {
 
 std::tuple<std::string, std::vector<char>, std::shared_ptr<HuffmanTree>>
 File::readHuffFile(const std::filesystem::path& filepath) {
-	std::ifstream file(filepath.filename(), std::ios::binary);
+	std::ifstream file(filepath, std::ios::binary);
 	if (!file.is_open()) {
 		throw std::out_of_range("ERROR: wrong file path");
 	}
@@ -115,7 +115,7 @@ File::readHuffFile(const std::filesystem::path& filepath) {
 }
 
 void File::writeHuffFile(const std::filesystem::path& filepath) {
-	std::ofstream file(filepath.filename(), std::ios::trunc | std::ios::binary);
+	std::ofstream file(filepath, std::ios::trunc | std::ios::binary);
 
 	if (!file.good()) {
 		throw std::out_of_range("ERROR: unable to create the .huf file");

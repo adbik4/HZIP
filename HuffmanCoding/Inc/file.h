@@ -20,7 +20,7 @@ private:
 	static std::shared_ptr<HuffmanTree> _huffTree;
 
 	// private constructor
-	File(const std::filesystem::path& filepath);
+	File(std::filesystem::path input_path, std::filesystem::path output_path);
 
 	// private methods
 
@@ -29,9 +29,9 @@ public:
 	File(const File&) = delete;
 	File& operator=(const File&) = delete;
 
-	static std::shared_ptr<File> getInstance(std::string str) {
+	static std::shared_ptr<File> getInstance(const std::string& str1, const std::string& str2) {
 		if (!instance) {
-			instance = std::shared_ptr<File>(new File(str));
+			instance = std::shared_ptr<File>(new File(str1, str2));
 		}
 		return instance;
 	}

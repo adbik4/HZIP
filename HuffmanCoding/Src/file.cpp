@@ -8,39 +8,48 @@ std::vector<char> File::_content;
 std::unordered_map<char, Symbol> File::_huffMap;
 std::shared_ptr<HuffmanTree> File::_huffTree = nullptr;
 
-File::File(const std::filesystem::path& filepath)
+File::File(std::filesystem::path input_path, std::filesystem::path output_path)
 {
-	if (filepath.extension().string() == ".huf") {
+	if (input_path.extension().string() == ".huf") {
 		// --- DECOMPRESSION ---
 		try {
-			std::tie(_format, _content, _huffTree) = readHuffFile(filepath);
+			std::tie(_format, _content, _huffTree) = readHuffFile(input_path);
 		} catch (const std::exception& e) {
 			std::cout << e.what() << '\n';
 			std::exit(-1);
 		}
 
 		// write back the reconstruted data
+		std::filesystem::path tmp_path;
 		try {
-			writeTargetFile(filepath.stem().string().append(_format));
+			if (output_path.empty()) {
+				tmp_path = input_path;
+			}
+			else {
+				tmp_path = output_path;
+			}
+
+			tmp_path.replace_extension(_format);
+			writeTargetFile(tmp_path);
 		}
 		catch (const std::exception& e) {
 			std::cout << e.what() << '\n';
 			std::exit(-1);
 		}
 
-		std::cout << "File extracted to " << filepath.stem().string().append(_format) << '\n';
+		std::cout << "File extracted to " << tmp_path.string() << '\n';
 	}
 	else {
 		// --- COMPRESSION ---
 		try {
-			_content = readSourceFile(filepath);
+			_content = readSourceFile(input_path);
 		}
 		catch (const std::exception& e) {
 			std::cout << e.what() << '\n';
 			std::exit(-1);
 		}
 
-		_format = filepath.extension().string();
+		_format = input_path.extension().string();
 
 		// perform stochastic analysis of the message
 		_huffMap = CalcFrequency();
@@ -52,16 +61,25 @@ File::File(const std::filesystem::path& filepath)
 		_huffTree->encodeTable(_huffMap);
 
 		// write a .huf file
+		std::filesystem::path tmp_path;
 		try {
-			writeHuffFile(filepath.stem().string().append(".huf"));
-		} catch (const std::exception& e) {
+			if (output_path.empty()) {
+				tmp_path = input_path;
+			} else {
+				tmp_path = output_path;
+			}
+
+			tmp_path.replace_extension(".huff");
+			writeHuffFile(tmp_path);
+		}
+		catch (const std::exception& e) {
 			std::cout << e.what() << '\n';
 			std::exit(-1);
 		}
 
 		// PRINT SUMMARY
-		std::cout << "File compressed to " << filepath.stem().string().append(".huf") << '\n';
 		std::cout << this->getMapping() << '\n';
+		std::cout << "File compressed to " << tmp_path.string() << '\n';
 	}
 }
 

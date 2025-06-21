@@ -138,6 +138,7 @@ std::ostream& operator<<(std::ostream& os, const std::unordered_map<char, Symbol
 	std::cout << "symbol count: " << map.size() << "\n";
 	std::cout << "entropy of the message: " << calcEntropy(map) << "\n";
 	std::cout << "encoding efficiency: " << calcEfficiency(map)*100<< "%\n\n";
+	std::cout << "compression ratio: " << "%\n\n";
 	for (const auto& [key, value] : map) {
 		std::cout << value << "\n";
 	}

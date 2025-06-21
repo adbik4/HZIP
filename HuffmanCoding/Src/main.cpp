@@ -5,24 +5,64 @@
 #include "tree.h"
 #include "types.h"
 
-int main()
+#include "boost/program_options.hpp"
+namespace po = boost::program_options;
+
+int main(int argc, char* argv[])
 {
-	// init
-	SetConsoleOutputCP(1250);
-	std::cout << std::fixed << std::setprecision(3);
+	try {
+		// init
+		SetConsoleOutputCP(1250);
+		std::cout << std::fixed << std::setprecision(3);
 
-	// code
-	std::shared_ptr<File> file = File::getInstance("impuls.pdf");
+		// argument parser setup
+		std::string input_path;
+		std::string output_path;
 
-	//	 WHAT THE CODE SHOULD LOOK LIKE
-	//	 decompress:
-	//	File file = openFile("filepath.txt"); // automatically decompresses, reads tables and trees, fills in its properties
-	//	std::cout << file.getContents();
+		po::options_description desc("Options");
+		desc.add_options()
+			("help", "print help message")
+			("input-path", po::value<std::string>(&input_path), "path to the file that you want to compress/decompress\n(positional)")
+			("output-path", po::value<std::string>(&output_path), "path to where to save the file\n(positional, optional)")
+			;
 
-	//	 compress:
-	//	std::string content = "ABBCCC";
-	//	File file(content); // fills in its properties, generates tables and trees
-	//	file.writeHuffFile("filepath.txt"); // automatically compresses
+		po::positional_options_description pos;
+		pos.add("input-path", 1)
+		   .add("output-path", 1);
+
+		po::variables_map vm;
+		po::store(po::command_line_parser(argc, argv).options(desc).positional(pos).run(), vm);
+		po::notify(vm); // notify if arguments are missing
+
+		// program logic
+		bool no_input = true;
+
+		if (vm.count("help")) {
+			no_input = false;
+			std::cout << desc << "\n";
+			return 0;
+		}
+
+		if (vm.count("output-path")) {
+			no_input = false;
+			std::shared_ptr<File> file = File::getInstance(input_path, output_path);
+		}
+		else if (vm.count("input-path")) {
+			no_input = false;
+			std::shared_ptr<File> file = File::getInstance(input_path, output_path);
+		}
+
+		if (no_input) {
+			std::cout << "HZIP\n - a simple compression program which uses Huffman encoding\nto try to reduce filesize without loss of information";
+		}
+	}
+	catch (const std::exception& e) {
+		std::cout << "error: " << e.what() << "\n";
+		return 1;
+	}
+	catch (...) {
+		std::cout << "Exception of unknown type!\n";
+	}
 
 	return 0;
 }
