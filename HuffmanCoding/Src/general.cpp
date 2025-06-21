@@ -31,3 +31,11 @@ double calcEfficiency(const std::unordered_map<char, Symbol>& map) {
 	}
 	return entropy / expectedEncodingLen;
 }
+
+void memStats(const std::filesystem::path& before, const std::filesystem::path& after) {
+	auto b_size = std::filesystem::file_size(before);
+	auto a_size = std::filesystem::file_size(after);
+	std::cout << "before: " << (double)b_size / 1000 << " kB\n";
+	std::cout << "after: " << (double)a_size / 1000 << " kB\n";
+	std::cout << std::setprecision(1) << "compression ratio: " << (double)a_size / b_size * 100 << "%\n" << std::setprecision(3);
+}
