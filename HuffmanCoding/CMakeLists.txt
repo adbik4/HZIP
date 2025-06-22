@@ -19,21 +19,22 @@ set(HEADERS
     Inc/general.h
 )
 
-add_executable(SmartCpp-HuffmanCoding ${SOURCES} ${HEADERS})
+add_executable(HZIP ${SOURCES} ${HEADERS})
 
-target_include_directories(SmartCpp-HuffmanCoding PRIVATE
+target_include_directories(HZIP PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Src
     ${CPP_LIBS}/boost_1_88_0
 )
 
 find_package(Boost REQUIRED COMPONENTS program_options)
+target_link_libraries(HZIP PRIVATE Boost::program_options)
 
-target_link_libraries(SmartCpp-HuffmanCoding PRIVATE Boost::program_options)
+target_sources(HZIP PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET SmartCpp-HuffmanCoding PROPERTY CXX_STANDARD 20)
-  set_property(TARGET SmartCpp-HuffmanCoding PROPERTY CXX_STANDARD_REQUIRED ON)
+  set_property(TARGET HZIP PROPERTY CXX_STANDARD 20)
+  set_property(TARGET HZIP PROPERTY CXX_STANDARD_REQUIRED ON)
 endif()
 
 # TODO: Add tests and install targets if needed.

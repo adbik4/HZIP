@@ -70,7 +70,7 @@ File::File(std::filesystem::path input_path, std::filesystem::path output_path)
 				tmp_path = output_path;
 			}
 
-			tmp_path.replace_extension(".huff");
+			tmp_path.replace_extension(".huf");
 			writeHuffFile(tmp_path);
 		}
 		catch (const std::exception& e) {

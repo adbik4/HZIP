@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 
 		po::options_description desc("Options");
 		desc.add_options()
-			("help", "print help message")
+			("help,h", "print help message")
 			("input-path", po::value<std::string>(&input_path), "path to the file that you want to compress/decompress\n(positional)")
 			("output-path", po::value<std::string>(&output_path), "path to where to save the file\n(positional, optional)")
 			;
@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
 		if (vm.count("help")) {
 			no_input = false;
 			std::cout << desc << "\n";
+			std::cout << "Example:\nHZIP file_to_compress.txt C:/Users/[USER]/Documents/result.huf\n\n";
 			return 0;
 		}
 
