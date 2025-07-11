@@ -2,6 +2,8 @@
 # project specific logic here.
 #
 
+cmake_minimum_required(VERSION 3.28)
+project(HZIP)
 set(CPP_LIBS E:/Programowanie/C++/libraries)
 
 set(SOURCES

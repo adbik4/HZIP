@@ -10,6 +10,9 @@
 #include "types.h"
 #include "tree.h"
 
+#include "boost/program_options.hpp"
+extern boost::program_options::variables_map vm;
+
 class File {  // singleton
 private:
 	static std::shared_ptr<File> instance;

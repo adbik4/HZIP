@@ -1,5 +1,6 @@
 #include "file.h"
 #include "general.h"
+
 // description: main file method definitions
 
 std::shared_ptr<File> File::instance = nullptr;
@@ -79,7 +80,9 @@ File::File(std::filesystem::path input_path, std::filesystem::path output_path)
 		}
 
 		// PRINT SUMMARY
-		std::cout << this->getMapping() << '\n';
+		if (vm.count("verbose")) {
+			std::cout << this->getMapping() << '\n';
+		}
 		std::cout << "File compressed to " << tmp_path.string() << '\n';
 		memStats(input_path, tmp_path);
 	}
