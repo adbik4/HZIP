@@ -54,12 +54,30 @@ Build
 ```
 
 Finally, restart your terminal
-## Demo
-
-placeholder
-
 
 ## Screenshots
 
 ![Available Commands](/docs/demo_screenshot.png?raw=true "Available Commands")
 
+![File Analysis](/docs/demo_screenshot2.png?raw=true "File Analysis")
+
+
+## Benchmark
+
+Here's how the algorithm stacks up against other compression methods with their default settings.
+
+- ### Text file performance - on the script of the entire Bee Movie
+![Text Comparison](/docs/text_comparison_alpha.png?raw=true "Text Comparison")
+The ideal scenario for most compression algorithms, there are plenty of patterns to simplify.
+
+- ### Mixed file performance - on a scientific paper in .pdf format
+![Mixed Comparison](/docs/mixed_comparison_alpha.png?raw=true "Mixed Comparison")
+PDFs offer a good mix of both text and images, and are already semi-compressed.
+
+- ### Image file performance - on a high resolution .png photograph
+![Image Comparison](/docs/image_comparison_alpha.png?raw=true "Image Comparison")
+PNG files are already heavily compressed, this is a good example of "uncompressible" data.
+
+- ### High entropy data performance - on a 1 MiB stream from /dev/urandom
+![Random Comparison](/docs/random_comparison_alpha.png?raw=true "Random Comparison")
+Worst case scenario for all compression algorithms.
